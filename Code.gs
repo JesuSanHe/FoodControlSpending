@@ -154,9 +154,7 @@ function getDashboard(params) {
       const fecha = new Date(now);
       fecha.setDate(now.getDate() - i);
       const gasto = regTodo
-        .filter(r => r.fecha &&
-          Utilities.formatDate(new Date(r.fecha), TZ, 'yyyy-MM-dd') ===
-          Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
+        .filter(r => r.fecha === Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
         .reduce((s, r) => s + r.total, 0);
       historial.push({ label: dias[6 - i], gasto: Math.round(gasto * 100) / 100 });
     }
@@ -166,9 +164,7 @@ function getDashboard(params) {
       const fecha = new Date(now);
       fecha.setDate(now.getDate() - i);
       const gasto = regTodo
-        .filter(r => r.fecha &&
-          Utilities.formatDate(new Date(r.fecha), TZ, 'yyyy-MM-dd') ===
-          Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
+        .filter(r => r.fecha === Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
         .reduce((s, r) => s + r.total, 0);
       historial.push({ label: `D${30 - i}`, gasto: Math.round(gasto * 100) / 100 });
     }
