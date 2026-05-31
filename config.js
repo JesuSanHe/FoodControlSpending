@@ -6,7 +6,7 @@
 const CONFIG = {
   // URL del Web App de Google Apps Script.
   // Después de desplegar el Code.gs, pega aquí la URL generada.
-  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwSbMl6X8cuQXgKNx8EETdPscSDzS7ZIUnA_AFZI754o3k8IJtWCEyNRU3EkmTSDUFeCQ/exec',
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwypvnH0sYaoxpbkOr5UntfO4QcvxY6Jb-G3emWwtlWJQlt__s8fG8G5CmeXLbXSzxOQg/exec',
 
   // Nombres de los dos usuarios de la app
   USUARIOS: ['Jesús', 'Lilian'],
