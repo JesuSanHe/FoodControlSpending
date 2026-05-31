@@ -149,7 +149,7 @@ function getDashboard(params) {
 
   if (periodo === 'semana') {
     // Últimos 7 días
-    const dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    const dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
     for (let i = 6; i >= 0; i--) {
       const fecha = new Date(now);
       fecha.setDate(now.getDate() - i);
@@ -159,18 +159,8 @@ function getDashboard(params) {
       historial.push({ label: dias[6 - i], gasto: Math.round(gasto * 100) / 100 });
     }
   } else if (periodo === 'mes') {
-    // Últimos 30 días
-    for (let i = 29; i >= 0; i--) {
-      const fecha = new Date(now);
-      fecha.setDate(now.getDate() - i);
-      const gasto = regTodo
-        .filter(r => r.fecha === Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
-        .reduce((s, r) => s + r.total, 0);
-      historial.push({ label: `D${30 - i}`, gasto: Math.round(gasto * 100) / 100 });
-    }
-  } else {
-    // Período 'todo' — últimas 52 semanas
-    for (let i = 51; i >= 0; i--) {
+    // Últimas 4 semanas
+    for (let i = 3; i >= 0; i--) {
       const start = new Date(now);
       start.setDate(now.getDate() - (i + 1) * 7);
       const end = new Date(now);
@@ -178,7 +168,20 @@ function getDashboard(params) {
       const gasto = regTodo
         .filter(r => r.fecha && new Date(r.fecha) >= start && new Date(r.fecha) < end)
         .reduce((s, r) => s + r.total, 0);
-      historial.push({ label: `W${52 - i}`, gasto: Math.round(gasto * 100) / 100 });
+      historial.push({ label: `Semana ${4 - i}`, gasto: Math.round(gasto * 100) / 100 });
+    }
+  } else {
+    // Período 'todo' — últimos 12 meses
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    for (let i = 11; i >= 0; i--) {
+      const mes = (now.getMonth() - i + 12) % 12;
+      const año = now.getFullYear() - Math.floor((now.getMonth() - i) / 12);
+      const primerDia = new Date(año, mes, 1);
+      const ultimoDia = new Date(año, mes + 1, 0);
+      const gasto = regTodo
+        .filter(r => r.fecha && new Date(r.fecha) >= primerDia && new Date(r.fecha) <= ultimoDia)
+        .reduce((s, r) => s + r.total, 0);
+      historial.push({ label: meses[mes], gasto: Math.round(gasto * 100) / 100 });
     }
   }
 
