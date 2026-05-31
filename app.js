@@ -418,7 +418,7 @@ function renderPanel() {
   const d = state.panel.data;
   if (!d) return;
 
-  const { kpis, categorias, semanas, alertas, precios } = d;
+  const { kpis, categorias, historial, alertas, precios } = d;
 
   // Datos del donut según filtro de usuario
   let donutData, donutLabel, donutTotal;
@@ -539,8 +539,8 @@ function renderPanel() {
 
     <!-- Historial de Gasto -->
     <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
-      <h3 class="text-label-md font-semibold text-on-surface mb-3">Historial Semanal</h3>
-      ${renderBarChart(semanas)}
+      <h3 class="text-label-md font-semibold text-on-surface mb-3">Historial</h3>
+      ${renderBarChart(historial, state.panel.periodo)}
     </div>
 
     <!-- Alertas -->
@@ -608,23 +608,23 @@ function renderDonutChart(segments, total, centerLabel) {
     </div>`;
 }
 
-function renderBarChart(semanas) {
-  if (!semanas || semanas.length === 0) {
+function renderBarChart(historial, periodo) {
+  if (!historial || historial.length === 0) {
     return '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos</p>';
   }
-  const maxGasto = Math.max(...semanas.map(s => s.gasto), 1);
-  const bars = semanas.map((s, i) => {
-    const pct  = Math.round((s.gasto / maxGasto) * 100);
-    const isLast = i === semanas.length - 1;
+  const maxGasto = Math.max(...historial.map(h => h.gasto), 1);
+  const bars = historial.map((h, i) => {
+    const pct = Math.round((h.gasto / maxGasto) * 100);
+    const isLast = i === historial.length - 1;
     return `
       <div class="flex flex-col items-center gap-1">
-        ${s.gasto > 0 ? `<span class="text-[8px] text-on-surface-variant">${fmt.money(s.gasto).replace('$','')}</span>` : ''}
+        ${h.gasto > 0 ? `<span class="text-[8px] text-on-surface-variant">${fmt.money(h.gasto).replace('$','')}</span>` : ''}
         <div class="w-5 rounded-t-sm" style="height:${Math.max(pct, 4)}px; background:${isLast ? '#006948' : '#68dba9'}; transition: height 0.8s cubic-bezier(0.34,1.56,0.64,1)"></div>
-        <span class="text-[9px] ${isLast ? 'text-primary font-bold' : 'text-on-surface-variant'}">${s.label}</span>
+        <span class="text-[9px] ${isLast ? 'text-primary font-bold' : 'text-on-surface-variant'}">${h.label}</span>
       </div>`;
   }).join('');
 
-  return `<div class="h-36 flex items-end justify-between gap-1 px-1">${bars}</div>`;
+  return `<div class="h-36 flex items-end justify-between gap-1 px-1 overflow-x-auto">${bars}</div>`;
 }
 
 function renderAlertas(alertas, precios) {
@@ -756,10 +756,17 @@ function demoPanel() {
       { nombre: 'Frutas',               total: 120.95 },
       { nombre: 'Pastas y Panadería',   total: 86.08  },
     ],
-    semanas: [
-      { label:'S1', gasto:320 }, { label:'S2', gasto:540 }, { label:'S3', gasto:280 },
-      { label:'S4', gasto:890 }, { label:'S5', gasto:430 }, { label:'S6', gasto:610 },
-      { label:'S7', gasto:380 }, { label:'S8', gasto:1240 },
+    historial: [
+      { label:'D1', gasto:120 }, { label:'D2', gasto:85 }, { label:'D3', gasto:140 },
+      { label:'D4', gasto:95 }, { label:'D5', gasto:210 }, { label:'D6', gasto:105 },
+      { label:'D7', gasto:160 }, { label:'D8', gasto:75 }, { label:'D9', gasto:130 },
+      { label:'D10', gasto:180 }, { label:'D11', gasto:165 }, { label:'D12', gasto:140 },
+      { label:'D13', gasto:125 }, { label:'D14', gasto:155 }, { label:'D15', gasto:190 },
+      { label:'D16', gasto:110 }, { label:'D17', gasto:95 }, { label:'D18', gasto:145 },
+      { label:'D19', gasto:170 }, { label:'D20', gasto:200 }, { label:'D21', gasto:85 },
+      { label:'D22', gasto:130 }, { label:'D23', gasto:105 }, { label:'D24', gasto:160 },
+      { label:'D25', gasto:175 }, { label:'D26', gasto:195 }, { label:'D27', gasto:140 },
+      { label:'D28', gasto:120 }, { label:'D29', gasto:150 }, { label:'D30', gasto:210 },
     ],
     precios: {
       'leche entera': {

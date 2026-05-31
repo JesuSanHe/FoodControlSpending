@@ -143,16 +143,47 @@ function getDashboard(params) {
     .map(([nombre, total]) => ({ nombre, total: Math.round(total * 100) / 100 }))
     .sort((a, b) => b.total - a.total);
 
-  // Historial semanal — últimas 8 semanas
-  const semanas = [];
+  // Historial con granularidad dinámica según período
+  let historial = [];
   const now = new Date();
-  for (let i = 7; i >= 0; i--) {
-    const start = new Date(now); start.setDate(now.getDate() - (i + 1) * 7);
-    const end   = new Date(now); end.setDate(now.getDate() - i * 7);
-    const gasto = regTodo
-      .filter(r => r.fecha && new Date(r.fecha) >= start && new Date(r.fecha) < end)
-      .reduce((s, r) => s + r.total, 0);
-    semanas.push({ label: `S${8 - i}`, gasto: Math.round(gasto * 100) / 100 });
+
+  if (periodo === 'semana') {
+    // Últimos 7 días
+    const dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    for (let i = 6; i >= 0; i--) {
+      const fecha = new Date(now);
+      fecha.setDate(now.getDate() - i);
+      const gasto = regTodo
+        .filter(r => r.fecha &&
+          Utilities.formatDate(new Date(r.fecha), TZ, 'yyyy-MM-dd') ===
+          Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
+        .reduce((s, r) => s + r.total, 0);
+      historial.push({ label: dias[6 - i], gasto: Math.round(gasto * 100) / 100 });
+    }
+  } else if (periodo === 'mes') {
+    // Últimos 30 días
+    for (let i = 29; i >= 0; i--) {
+      const fecha = new Date(now);
+      fecha.setDate(now.getDate() - i);
+      const gasto = regTodo
+        .filter(r => r.fecha &&
+          Utilities.formatDate(new Date(r.fecha), TZ, 'yyyy-MM-dd') ===
+          Utilities.formatDate(fecha, TZ, 'yyyy-MM-dd'))
+        .reduce((s, r) => s + r.total, 0);
+      historial.push({ label: `D${30 - i}`, gasto: Math.round(gasto * 100) / 100 });
+    }
+  } else {
+    // Período 'todo' — últimas 52 semanas
+    for (let i = 51; i >= 0; i--) {
+      const start = new Date(now);
+      start.setDate(now.getDate() - (i + 1) * 7);
+      const end = new Date(now);
+      end.setDate(now.getDate() - i * 7);
+      const gasto = regTodo
+        .filter(r => r.fecha && new Date(r.fecha) >= start && new Date(r.fecha) < end)
+        .reduce((s, r) => s + r.total, 0);
+      historial.push({ label: `W${52 - i}`, gasto: Math.round(gasto * 100) / 100 });
+    }
   }
 
   // Comparador de precios — último precio por producto×tienda
@@ -186,7 +217,7 @@ function getDashboard(params) {
       balance:        Math.round((gastoJesus - gastoLilian) * 100) / 100,
     },
     categorias,
-    semanas,
+    historial,
     precios,
     alertas: { porVencer, agotados },
   };
