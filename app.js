@@ -109,16 +109,18 @@ function initRegistro() {
   const selUnit = document.getElementById('reg-unidad');
   selUnit.innerHTML = CONFIG.UNIDADES.map(u => `<option value="${u}">${u}</option>`).join('');
 
-  // Cálculo automático de total
+  // Cálculo automático de precio unitario
   const inputCant = document.getElementById('reg-cantidad');
   const inputPrecio = document.getElementById('reg-precio');
   const spanTotal = document.getElementById('reg-total');
-  const calcTotal = () => {
-    const t = (parseFloat(inputCant.value) || 0) * (parseFloat(inputPrecio.value) || 0);
-    spanTotal.textContent = fmt.money(t);
+  const calcPrecioUnitario = () => {
+    const cantidad = parseFloat(inputCant.value) || 0;
+    const montoTotal = parseFloat(inputPrecio.value) || 0;
+    const precioUnitario = cantidad > 0 ? montoTotal / cantidad : 0;
+    spanTotal.textContent = fmt.money(precioUnitario);
   };
-  inputCant.addEventListener('input', calcTotal);
-  inputPrecio.addEventListener('input', calcTotal);
+  inputCant.addEventListener('input', calcPrecioUnitario);
+  inputPrecio.addEventListener('input', calcPrecioUnitario);
 
   // Botón agregar al carrito
   document.getElementById('btn-agregar').addEventListener('click', agregarAlCarrito);
@@ -132,15 +134,16 @@ function agregarAlCarrito() {
   const cat      = document.getElementById('reg-categoria').value;
   const unidad   = document.getElementById('reg-unidad').value;
   const cantidad = parseFloat(document.getElementById('reg-cantidad').value) || 0;
-  const precio   = parseFloat(document.getElementById('reg-precio').value) || 0;
+  const montoTotal = parseFloat(document.getElementById('reg-precio').value) || 0;
   const venc     = document.getElementById('reg-vencimiento').value;
 
   if (!nombre)   return showToast('Ingresa el nombre del producto', 'error');
   if (!cat)      return showToast('Selecciona una categoría', 'error');
   if (cantidad <= 0) return showToast('Cantidad debe ser mayor a 0', 'error');
-  if (precio <= 0)   return showToast('Precio debe ser mayor a 0', 'error');
+  if (montoTotal <= 0)   return showToast('Monto total debe ser mayor a 0', 'error');
 
-  state.cart.push({ nombre, categoria: cat, unidad, cantidad, precioUnitario: precio, total: cantidad * precio, fechaVencimiento: venc });
+  const precioUnitario = montoTotal / cantidad;
+  state.cart.push({ nombre, categoria: cat, unidad, cantidad, precioUnitario, total: montoTotal, fechaVencimiento: venc });
   renderCart();
 
   // Limpiar campos del producto (mantener fecha, usuario, tienda)
