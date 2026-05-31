@@ -1,0 +1,521 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>KitchenSync - Panel de Análisis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#006948",
+                      "on-secondary-container": "#586377",
+                      "outline": "#6d7a72",
+                      "tertiary-fixed-dim": "#ffb3ae",
+                      "on-tertiary-fixed-variant": "#7f2928",
+                      "error": "#ba1a1a",
+                      "surface-bright": "#f5fbf5",
+                      "surface-dim": "#d5dcd6",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#d8e3fb",
+                      "on-tertiary-fixed": "#410004",
+                      "inverse-surface": "#2c322e",
+                      "outline-variant": "#bccac0",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-highest": "#dee4de",
+                      "surface-tint": "#006c4a",
+                      "inverse-primary": "#68dba9",
+                      "on-primary-fixed": "#002114",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f5fbf5",
+                      "secondary-container": "#d5e0f8",
+                      "primary-container": "#00855d",
+                      "on-secondary-fixed-variant": "#3c475a",
+                      "surface-container": "#e9efe9",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#111c2d",
+                      "surface-container-high": "#e4eae4",
+                      "on-surface-variant": "#3d4a42",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#eff5ef",
+                      "background": "#f5fbf5",
+                      "on-primary-fixed-variant": "#005137",
+                      "on-surface": "#171d19",
+                      "tertiary-fixed": "#ffdad7",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#bcc7de",
+                      "surface-variant": "#dee4de",
+                      "on-tertiary-container": "#fffbff",
+                      "on-background": "#171d19",
+                      "primary-fixed-dim": "#68dba9",
+                      "tertiary": "#9b3e3b",
+                      "primary-fixed": "#85f8c4",
+                      "on-primary-container": "#f5fff7",
+                      "inverse-on-surface": "#ecf2ec",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#ba5551",
+                      "secondary": "#545f73"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "margin-mobile": "16px",
+                      "lg": "24px",
+                      "md": "16px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+              },
+              "animation": {
+                "shimmer": "shimmer 2s infinite linear",
+                "pulse-subtle": "pulse-subtle 3s infinite ease-in-out"
+              },
+              "keyframes": {
+                "shimmer": {
+                  "0%": { "background-position": "-200px 0" },
+                  "100%": { "background-position": "200px 0" }
+                },
+                "pulse-subtle": {
+                  "0%, 100%": { "transform": "scale(1)", "opacity": "1" },
+                  "50%": { "transform": "scale(1.02)", "opacity": "0.95" }
+                }
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes drawCircle {
+            from { stroke-dasharray: 0 100; }
+        }
+        .animate-circle {
+            animation: drawCircle 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes growBar {
+            0% { transform: scaleY(0); }
+            70% { transform: scaleY(1.1); }
+            100% { transform: scaleY(1); }
+        }
+        .animate-bar {
+            transform-origin: bottom;
+            animation: growBar 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .reveal-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shimmer-text {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200px 100%;
+            background-repeat: no-repeat;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 2.5s infinite linear;
+        }
+
+        .interactive-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card:active {
+            transform: scale(0.98) translateY(1px);
+            box-shadow: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-card, .animate-circle, .animate-bar, .interactive-card, .animate-shimmer, .animate-pulse-subtle {
+                animation: none !important;
+                transition: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-[120px]">
+<!-- TopAppBar -->
+
+<main class="mt-[56px] p-margin-mobile overflow-x-hidden space-y-xl">
+<!-- Period Filter Section -->
+<section class="flex flex-col gap-sm reveal-card visible">
+<div class="flex items-center justify-between mb-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Panel de Análisis</h2>
+<button class="flex items-center gap-xs text-primary font-label-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_alt">filter_alt</span> Filtrar
+                </button>
+</div>
+<div class="flex flex-col gap-xs">
+<span class="text-label-sm text-on-surface-variant font-medium">Periodo</span>
+<div class="flex gap-sm overflow-x-auto no-scrollbar py-1">
+<button class="px-md py-xs bg-primary text-on-primary rounded-full font-label-sm whitespace-nowrap active:scale-95">Esta Semana</button>
+<button class="px-md py-xs bg-surface border border-outline-variant text-on-surface-variant rounded-full font-label-sm whitespace-nowrap">Este Mes</button>
+<button class="px-md py-xs bg-surface border border-outline-variant text-on-surface-variant rounded-full font-label-sm whitespace-nowrap">Personalizado</button>
+</div>
+</div>
+</section>
+<!-- KPI Section - Bento Grid -->
+<section class="grid grid-cols-2 gap-md">
+<div class="col-span-2 bg-surface-container-low border border-outline-variant p-md rounded-xl flex flex-col interactive-card reveal-card visible">
+<span class="text-label-sm text-on-surface-variant">Gasto Total&nbsp;</span>
+<div class="flex items-end justify-between mt-xs">
+<span class="text-display-lg font-display-lg text-primary">$1,240.50</span>
+
+</div>
+</div>
+<div class="bg-surface border border-outline-variant p-md rounded-xl space-y-xs interactive-card reveal-card visible">
+<span class="material-symbols-outlined text-secondary" data-icon="groups">groups</span>
+<p class="text-label-sm text-on-surface-variant">Promedio / Persona</p>
+<p class="text-headline-sm font-headline-sm text-on-surface">$413.50</p>
+</div>
+<div class="bg-surface border border-outline-variant p-md rounded-xl space-y-xs interactive-card reveal-card visible">
+<span class="material-symbols-outlined text-secondary" data-icon="shopping_cart">shopping_cart</span>
+<p class="text-label-sm text-on-surface-variant">No. de Compras</p>
+<p class="text-headline-sm font-headline-sm text-on-surface">4</p>
+</div>
+</section>
+<!-- Distribución de Gastos Widget - SCREEN_14 - MODIFIED FOR SOFIA FILTER -->
+<section class="bg-surface border border-outline-variant p-md rounded-xl shadow-sm interactive-card reveal-card visible">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="donut_small">donut_small</span>
+                    Distribución de Gastos
+                </h3>
+</div>
+<div class="flex flex-col gap-sm mb-lg">
+<div class="flex gap-sm overflow-x-auto no-scrollbar">
+<button class="px-md py-xs bg-surface border border-outline-variant text-on-surface-variant rounded-full font-label-sm whitespace-nowrap">Todos</button>
+<button class="px-md py-xs bg-surface border border-outline-variant text-on-surface-variant rounded-full font-label-sm whitespace-nowrap">Usuario 1</button>
+<button class="px-md py-xs bg-primary text-on-primary rounded-full font-label-sm whitespace-nowrap">Usuario 2</button>
+</div>
+</div>
+<div class="flex flex-col gap-lg items-center">
+<div class="relative flex items-center justify-center w-[160px] h-[160px]">
+<svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+<!-- Sofía Breakdown Data Visualization -->
+<!-- Despensa: 55.3% ($240.12) - Verde #059669 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#059669" stroke-dasharray="55.3 44.7" stroke-dashoffset="0" stroke-width="4"></circle>
+<!-- Carnes: 20% ($86.84) - Rojo #dc2626 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#dc2626" stroke-dasharray="20 80" stroke-dashoffset="-55.3" stroke-width="4"></circle>
+<!-- Otros: 24.7% ($107.22) - Gris #4b5563 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#4b5563" stroke-dasharray="24.7 75.3" stroke-dashoffset="-75.3" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-[10px] text-on-surface-variant font-medium">Sofía</span>
+<span class="text-headline-sm font-bold text-on-surface shimmer-text">$434.18</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm w-full">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#059669]"></div>
+<span class="text-label-sm text-on-surface-variant">Despensa</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$240.12</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#dc2626]"></div>
+<span class="text-label-sm text-on-surface-variant">Carnes</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$86.84</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#4b5563]"></div>
+<span class="text-label-sm text-on-surface-variant">Otros</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$107.22</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Gasto por Categoría section - GLOBAL BREAKDOWN (Baseline Comparison) -->
+<section class="bg-surface border border-outline-variant p-md rounded-xl shadow-sm interactive-card reveal-card visible">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="category">category</span> Gasto por Categoría
+                </h3>
+</div>
+<div class="flex flex-col gap-lg items-center">
+<div class="relative flex items-center justify-center w-[160px] h-[160px]">
+<svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+<!-- Despensa 45% ($558.23) - Verde #059669 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#059669" stroke-dasharray="45 55" stroke-dashoffset="0" stroke-width="4"></circle>
+<!-- Carnes 20% ($248.10) - Rojo #dc2626 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#dc2626" stroke-dasharray="20 80" stroke-dashoffset="-45" stroke-width="4"></circle>
+<!-- Lácteos 20% ($248.10) - Azul #2563eb -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#2563eb" stroke-dasharray="20 80" stroke-dashoffset="-65" stroke-width="4"></circle>
+<!-- Otros 15% ($186.07) - Gris #4b5563 -->
+<circle class="animate-circle" cx="18" cy="18" fill="transparent" r="15.915" stroke="#4b5563" stroke-dasharray="15 85" stroke-dashoffset="-85" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-headline-sm font-bold text-on-surface">$1,240.50</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm w-full">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#059669]"></div>
+<span class="text-label-sm text-on-surface-variant">Despensa</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$558.23</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#dc2626]"></div>
+<span class="text-label-sm text-on-surface-variant">Carnes</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$248.10</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#2563eb]"></div>
+<span class="text-label-sm text-on-surface-variant">Lácteos</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$248.10</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-[#4b5563]"></div>
+<span class="text-label-sm text-on-surface-variant">Otros</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface">$186.07</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Historial Semanal -->
+<section class="space-y-md">
+<div class="bg-surface border border-outline-variant p-md rounded-xl interactive-card reveal-card visible">
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Historial</h3>
+<div class="h-[150px] flex items-end justify-between px-sm pt-md">
+<div class="w-6 bg-primary-fixed-dim rounded-t-sm h-[40%] animate-bar"></div>
+<div class="w-6 bg-primary-fixed-dim rounded-t-sm h-[65%] animate-bar"></div>
+<div class="w-6 bg-primary-fixed-dim rounded-t-sm h-[35%] animate-bar"></div>
+<div class="w-6 bg-primary rounded-t-sm h-[90%] animate-bar"></div>
+<div class="w-6 bg-primary-fixed-dim rounded-t-sm h-[50%] animate-bar"></div>
+</div>
+<div class="flex justify-between mt-xs px-[2px]">
+<span class="text-[10px] text-on-surface-variant">S1</span>
+<span class="text-[10px] text-on-surface-variant">S2</span>
+<span class="text-[10px] text-on-surface-variant">S3</span>
+<span class="text-[10px] text-primary font-bold">S4</span>
+<span class="text-[10px] text-on-surface-variant">S5</span>
+</div>
+</div>
+</section>
+<!-- Alertas Inteligentes -->
+<section class="space-y-md reveal-card visible pt-md">
+<h3 class="font-label-md text-label-md text-on-surface">Alertas Inteligentes</h3>
+<!-- Alerta de Inflación -->
+<div class="bg-error-container bg-opacity-30 border border-error-container p-md rounded-xl flex gap-md items-start animate-pulse-subtle shadow-sm">
+<span class="material-symbols-outlined text-error" data-icon="trending_up">trending_up</span>
+<div class="space-y-xs">
+<p class="font-body-md font-bold text-on-error-container">Alerta de Precios</p>
+<p class="text-body-sm text-on-surface-variant">El precio de la <span class="font-bold">Leche Entera</span> subió $4.50 respecto al mes pasado en Walmart.</p>
+</div>
+</div><div class="bg-primary-container bg-opacity-10 border border-primary-container p-md rounded-xl flex gap-md items-start animate-pulse-subtle shadow-sm mt-md"><span class="material-symbols-outlined text-primary-container" data-icon="trending_down">trending_down</span><div class="space-y-xs"><p class="font-body-md font-bold text-on-primary-container">Ahorro detectado</p><p class="text-body-sm text-on-surface-variant">El precio del <span class="font-bold">Arroz</span> bajó $2.10 respecto a la semana pasada en el Supermercado Local.</p></div></div>
+<!-- Suggested Shopping List -->
+<div class="bg-secondary-container bg-opacity-30 border border-secondary-container p-md rounded-xl flex gap-md items-start shadow-sm mt-md">
+<span class="material-symbols-outlined text-secondary" data-icon="shopping_basket">shopping_basket</span>
+<div class="space-y-sm flex-1">
+<div>
+<p class="font-body-md font-bold text-on-secondary-fixed-variant">Lista de Compras Sugerida</p>
+<p class="text-body-sm text-on-surface-variant">Productos sin existencias que podrás necesitar:</p>
+</div>
+<div class="grid grid-cols-1 gap-xs">
+<div class="flex items-center gap-sm bg-surface bg-opacity-50 p-xs rounded-lg border border-outline-variant border-opacity-30">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">water_drop</span>
+<span class="text-label-md flex-1 text-on-surface">Huevos</span>
+<span class="material-symbols-outlined text-primary text-[20px]">check_box_outline_blank</span>
+</div>
+<div class="flex items-center gap-sm bg-surface bg-opacity-50 p-xs rounded-lg border border-outline-variant border-opacity-30">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">bakery_dining</span>
+<span class="text-label-md flex-1 text-on-surface">Pan</span>
+<span class="material-symbols-outlined text-primary text-[20px]">check_box_outline_blank</span>
+</div>
+<div class="flex items-center gap-sm bg-surface bg-opacity-50 p-xs rounded-lg border border-outline-variant border-opacity-30">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">grain</span>
+<span class="text-label-md flex-1 text-on-surface">Arroz</span>
+<span class="material-symbols-outlined text-primary text-[20px]">check_box_outline_blank</span>
+</div>
+</div>
+</div>
+</div>
+</section><section class="space-y-md reveal-card visible pt-md pb-lg"><h3 class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+    <span class="material-symbols-outlined text-primary" data-icon="compare_arrows">compare_arrows</span>
+    Comparador de Precios
+</h3>
+<div class="bg-surface-container-lowest p-md rounded-xl space-y-md">
+    <!-- Product Selector -->
+    <div class="relative">
+        <select class="w-full bg-surface border border-outline-variant rounded-xl px-md py-sm text-body-md text-on-surface appearance-none focus:ring-primary focus:border-primary">
+            <option selected="">Leche Entera (1L)</option>
+            <option>Arroz (1kg)</option>
+            <option>Huevos (12 uds)</option>
+            <option>Aceite de Girasol (1L)</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+    </div>
+    <!-- Comparison List -->
+    <div class="space-y-sm">
+        <!-- Supermercado Local - Best Price -->
+        <div class="bg-surface border-2 border-primary p-md rounded-xl flex items-center justify-between interactive-card shadow-sm relative mt-4">
+            <div class="absolute -top-3 left-md bg-primary text-on-primary text-[10px] px-sm py-[2px] rounded-full font-bold uppercase tracking-wider">Mejor Opci3n</div>
+            <div class="flex flex-col">
+                <span class="font-body-md font-bold text-on-surface">Supermercado Local</span>
+                <span class="text-label-sm text-on-surface-variant italic">9ltima compra: Hace 1 sem.</span>
+            </div>
+            <div class="text-right">
+                <span class="text-headline-sm font-bold text-primary">$24.50</span>
+            </div>
+        </div>
+        <!-- Tienda de la Esquina -->
+        <div class="bg-surface border border-outline-variant p-md rounded-xl flex items-center justify-between interactive-card shadow-sm">
+            <div class="flex flex-col">
+                <span class="font-body-md font-bold text-on-surface">Tienda de la Esquina</span>
+                <span class="text-label-sm text-on-surface-variant italic">9ltima compra: Hace 3 d7as</span>
+            </div>
+            <div class="text-right">
+                <span class="text-headline-sm font-bold text-on-surface">$26.00</span>
+            </div>
+        </div>
+        <!-- Walmart -->
+        <div class="bg-surface border border-outline-variant p-md rounded-xl flex items-center justify-between interactive-card shadow-sm">
+            <div class="flex flex-col">
+                <span class="font-body-md font-bold text-on-surface">Walmart</span>
+                <span class="text-label-sm text-on-surface-variant italic">9ltima compra: Ayer</span>
+            </div>
+            <div class="text-right">
+                <span class="text-headline-sm font-bold text-on-surface">$28.90</span>
+            </div>
+        </div>
+    </div>
+    <button class="w-full py-sm text-primary font-label-md border border-primary rounded-xl active:scale-95 transition-transform">
+        Ver Historial Completo
+    </button>
+</div></section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-[64px] pb-[20px] bg-surface border-t border-outline-variant z-50 flex justify-around items-center px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Registro</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-sm text-label-sm">Inventario</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary relative after:content-[''] after:absolute after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary" href="#">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: &quot;FILL&quot; 1;">analytics</span>
+<span class="font-label-sm text-label-sm">Panel</span>
+</a>
+</nav>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-card').forEach((card) => {
+                observer.observe(card);
+            });
+
+            const barObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.querySelectorAll('.animate-bar').forEach(bar => {
+                            bar.style.animation = 'none';
+                            bar.offsetHeight;
+                            bar.style.animation = null;
+                        });
+                        barObserver.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            const barSection = document.querySelector('.animate-bar')?.closest('.reveal-card');
+            if (barSection) barObserver.observe(barSection);
+
+            const circleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.querySelectorAll('.animate-circle').forEach(circle => {
+                            circle.style.animation = 'none';
+                            circle.offsetHeight;
+                            circle.style.animation = null;
+                        });
+                        circleObserver.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('svg').forEach(svg => circleObserver.observe(svg));
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+</body></html>
