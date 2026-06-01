@@ -403,7 +403,7 @@ async function loadPanel() {
   const container = document.getElementById('panel-content');
   container.innerHTML = renderSkeleton(6);
 
-  const res = await apiGet({ action: 'getDashboard', periodo: state.panel.periodo });
+  const res = await apiGet({ action: 'getDashboard', periodo: state.panel.periodo, usuario: state.panel.usuario });
 
   if (res._demo) {
     state.panel.data = demoPanel();
