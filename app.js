@@ -436,17 +436,17 @@ function renderPanel() {
     ];
   } else if (state.panel.usuario === 'Lilian') {
     donutLabel  = CONFIG.USUARIOS[1];
-    donutData   = (categoriasLilian || []).filter(c => c.total > 0).slice(0, 5).map(c => ({
+    donutTotal  = kpis.gastoLilian;
+    donutData   = (categoriasLilian || []).filter(c => c.total > 0).map(c => ({
       label: c.nombre, value: c.total, color: catColor(c.nombre)
     }));
-    donutTotal  = donutData.reduce((s, c) => s + c.value, 0);
   } else {
     // else = Jesús (primer usuario) — sin comparar string con acento
     donutLabel  = CONFIG.USUARIOS[0];
-    donutData   = (categoriasJesus || []).filter(c => c.total > 0).slice(0, 5).map(c => ({
+    donutTotal  = kpis.gastoJesus;
+    donutData   = (categoriasJesus || []).filter(c => c.total > 0).map(c => ({
       label: c.nombre, value: c.total, color: catColor(c.nombre)
     }));
-    donutTotal  = donutData.reduce((s, c) => s + c.value, 0);
   }
 
   // Balance entre personas
@@ -531,10 +531,10 @@ function renderPanel() {
           : state.panel.usuario === 'Lilian'
           ? (categoriasLilian || [])
           : (categoriasJesus || []);
-        const catSegs  = catListData.slice(0, 8).map(c => ({
+        const catSegs  = catListData.map(c => ({
           label: c.nombre, value: c.total, color: catColor(c.nombre)
         }));
-        const catTotal = catSegs.reduce((s, c) => s + c.value, 0);
+        const catTotal = catListData.reduce((s, c) => s + c.total, 0);
         return renderDonutChart(catSegs, catTotal, 'Categorías');
       })()}
     </div>
