@@ -1093,6 +1093,20 @@ function init() {
 
   // Mostrar vista inicial
   showView('panel');
+
+  // Registrar Service Worker para soporte PWA
+  if ('serviceWorker' in navigator) {
+    const registerSW = () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+        .catch(err => console.error('Error al registrar Service Worker:', err));
+    };
+    if (document.readyState === 'complete') {
+      registerSW();
+    } else {
+      window.addEventListener('load', registerSW);
+    }
+  }
 }
 
 // ------------------------------------------------------------------
