@@ -258,7 +258,7 @@ function renderInventario() {
 
   let items = state.inventario;
   if (filter)              items = items.filter(i => i.producto.toLowerCase().includes(filter));
-  if (catFilter !== 'todos') items = items.filter(i => i.categoria === catFilter);
+  if (catFilter !== 'todos') items = items.filter(i => i.categoria?.toLowerCase() === catFilter);
 
   // Ordenar: agotados al final, vencimiento próximo primero
   items.sort((a, b) => {
