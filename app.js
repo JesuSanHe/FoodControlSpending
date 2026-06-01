@@ -736,14 +736,10 @@ function renderPanel() {
               <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
             </h3>
             <div class="mb-4 h-[30px] flex items-center">
-              <span class="text-label-sm text-on-surface-variant">Filtrado por: <b>${state.panel.usuario === 'todos' ? 'Todos' : state.panel.usuario}</b></span>
+              <span class="text-label-sm text-on-surface-variant">Distribución del Gasto Total</span>
             </div>
             ${(() => {
-              const catListData = state.panel.usuario === 'todos'
-                ? categorias
-                : state.panel.usuario === 'Lilian'
-                ? (categoriasLilian || [])
-                : (categoriasJesus || []);
+              const catListData = categorias || [];
               const catSegs  = catListData.map(c => ({
                 label: c.nombre, value: c.total, color: catColor(c.nombre)
               }));
