@@ -820,7 +820,7 @@ function renderDonutChart(segments, total, centerLabel) {
     </div>`).join('');
 
   return `
-    <div class="flex flex-col xl:flex-row items-center gap-6 justify-center">
+    <div class="flex flex-col 2xl:flex-row items-center gap-6 justify-center w-full min-w-0">
       <div class="relative w-40 h-40 flex-shrink-0">
         <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
           onclick="donutTap(event,'${cid}')">${circles}</svg>
@@ -833,7 +833,7 @@ function renderDonutChart(segments, total, centerLabel) {
           <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-1.5 w-full xl:flex-1">
+      <div class="flex flex-col gap-1.5 w-full 2xl:flex-1 min-w-0">
         ${legend}
       </div>
     </div>`;
