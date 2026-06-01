@@ -1149,37 +1149,28 @@ function actualizarAutocompletados() {
 // Tema Claro / Oscuro (Dark Mode)
 // ------------------------------------------------------------------
 function initThemeToggle() {
-  const btnHeader = document.getElementById('btn-theme-toggle');
-  const btnSidebar = document.getElementById('btn-theme-toggle-sidebar');
-  const iconHeader = document.getElementById('theme-toggle-icon');
-  const iconSidebar = document.querySelector('.theme-toggle-icon-sidebar');
-
-  const updateIcons = (isDark) => {
-    if (iconHeader) iconHeader.textContent = isDark ? 'light_mode' : 'dark_mode';
-    if (iconSidebar) iconSidebar.textContent = isDark ? 'light_mode' : 'dark_mode';
-  };
+  const btn = document.getElementById('btn-theme-toggle');
+  const icon = document.getElementById('theme-toggle-icon');
+  if (!btn || !icon) return;
 
   // Actualizar icono inicial
   const isDark = document.documentElement.classList.contains('dark');
-  updateIcons(isDark);
+  icon.textContent = isDark ? 'light_mode' : 'dark_mode';
 
-  const toggleTheme = () => {
+  btn.addEventListener('click', () => {
     const currentDark = document.documentElement.classList.contains('dark');
     if (currentDark) {
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
       localStorage.setItem('theme', 'light');
-      updateIcons(false);
+      icon.textContent = 'dark_mode';
     } else {
       document.documentElement.classList.remove('light');
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
-      updateIcons(true);
+      icon.textContent = 'light_mode';
     }
-  };
-
-  if (btnHeader) btnHeader.addEventListener('click', toggleTheme);
-  if (btnSidebar) btnSidebar.addEventListener('click', toggleTheme);
+  });
 }
 
 // ------------------------------------------------------------------

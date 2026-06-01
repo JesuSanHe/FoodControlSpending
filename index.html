@@ -184,19 +184,19 @@
       border-radius: 2px;
     }
     .nav-item { position: relative; }
-
-    /* Sidebar Navigation active styling (Desktop) */
-    aside .nav-item.active {
-      background-color: var(--md-primary-container) !important;
+    /* Header Navigation active styling (Desktop) */
+    header .nav-item.active {
+      border-bottom-color: var(--md-primary) !important;
+      color: var(--md-primary) !important;
     }
-    aside .nav-item.active .nav-icon {
-      color: var(--md-on-primary-container) !important;
+    header .nav-item.active .nav-icon {
+      color: var(--md-primary) !important;
     }
-    aside .nav-item.active .nav-label {
-      color: var(--md-on-primary-container) !important;
-      font-weight: 600;
+    header .nav-item.active .nav-label {
+      color: var(--md-primary) !important;
+      font-weight: 600 !important;
     }
-    aside .nav-item::after {
+    header .nav-item::after {
       display: none !important;
     }
 
@@ -217,56 +217,51 @@
   </style>
 </head>
 
-<body class="bg-background text-on-background min-h-screen pb-24 md:pb-6">
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-8">
 
   <!-- ==================== BANNER DEMO ==================== -->
   <div id="demo-banner" class="hidden fixed top-0 left-0 right-0 z-50 bg-[#ff6f00] text-white text-center text-label-sm py-1.5 px-4">
     ⚠️ Modo demo — Configura tu SCRIPT_URL en config.js para activar Google Sheets
   </div>
 
-  <!-- ==================== SIDEBAR NAVIGATION (Desktop) ==================== -->
-  <aside class="hidden md:flex flex-col fixed top-0 bottom-0 left-0 w-64 bg-surface border-r border-outline-variant z-50 p-4 gap-6">
-    <div class="flex items-center gap-2.5 px-2 py-3">
-      <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings:'FILL' 1">restaurant</span>
+  <!-- ==================== TOP APP BAR / NAVBAR ==================== -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-surface border-b border-outline-variant h-14 flex items-center px-4 md:px-6 justify-between transition-all"
+          style="top: var(--banner-offset, 0)">
+    
+    <!-- Logo y Nombre (Izquierda) -->
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings:'FILL' 1">restaurant</span>
       <span class="text-headline-sm font-bold text-on-surface">KitchenSync</span>
     </div>
-    
-    <div class="flex flex-col gap-1.5 flex-1">
-      <button class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container transition-all active:scale-95 w-full text-left" data-view="panel">
-        <span class="material-symbols-outlined nav-icon text-on-surface-variant text-[22px]">analytics</span>
-        <span class="nav-label text-body-sm text-on-surface-variant">Panel de Análisis</span>
+
+    <!-- Menú de navegación horizontal (Centro, visible solo en escritorio) -->
+    <div class="hidden md:flex items-center gap-1 h-full">
+      <button class="nav-item flex items-center gap-2 px-4 h-full text-body-sm text-on-surface-variant hover:text-primary active:scale-95 transition-all border-b-2 border-transparent" data-view="panel">
+        <span class="material-symbols-outlined nav-icon text-[20px]">analytics</span>
+        <span class="nav-label font-medium">Panel</span>
       </button>
-      <button class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container transition-all active:scale-95 w-full text-left" data-view="inventario">
-        <span class="material-symbols-outlined nav-icon text-on-surface-variant text-[22px]">inventory_2</span>
-        <span class="nav-label text-body-sm text-on-surface-variant">Inventario de Despensa</span>
+      <button class="nav-item flex items-center gap-2 px-4 h-full text-body-sm text-on-surface-variant hover:text-primary active:scale-95 transition-all border-b-2 border-transparent" data-view="inventario">
+        <span class="material-symbols-outlined nav-icon text-[20px]">inventory_2</span>
+        <span class="nav-label font-medium">Inventario</span>
       </button>
-      <button class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container transition-all active:scale-95 w-full text-left" data-view="registro">
-        <span class="material-symbols-outlined nav-icon text-on-surface-variant text-[22px]">receipt_long</span>
-        <span class="nav-label text-body-sm text-on-surface-variant">Registro de Compra</span>
+      <button class="nav-item flex items-center gap-2 px-4 h-full text-body-sm text-on-surface-variant hover:text-primary active:scale-95 transition-all border-b-2 border-transparent" data-view="registro">
+        <span class="material-symbols-outlined nav-icon text-[20px]">receipt_long</span>
+        <span class="nav-label font-medium">Registro</span>
       </button>
     </div>
 
-    <!-- Toggle Tema en la parte inferior del Sidebar -->
-    <div class="border-t border-outline-variant pt-4 flex items-center justify-between px-2">
-      <span class="text-label-sm text-on-surface-variant">Tema Oscuro</span>
-      <button id="btn-theme-toggle-sidebar" class="text-on-surface-variant hover:text-primary active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full" title="Alternar tema">
-        <span class="theme-toggle-icon-sidebar material-symbols-outlined text-[24px]">dark_mode</span>
+    <!-- Título dinámico en móvil, Theme Toggle (Derecha) -->
+    <div class="flex items-center gap-3">
+      <h1 id="topbar-title" class="text-headline-sm text-on-surface md:hidden">Registro de Compra</h1>
+      <button id="btn-theme-toggle" class="text-on-surface-variant hover:text-primary active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full" title="Alternar tema">
+        <span id="theme-toggle-icon" class="material-symbols-outlined text-[24px]">dark_mode</span>
       </button>
     </div>
-  </aside>
 
-  <!-- ==================== TOP APP BAR ==================== -->
-  <header class="fixed top-0 left-0 right-0 z-40 bg-surface border-b border-outline-variant h-14 flex items-center px-4 gap-3 md:left-64 transition-all"
-          style="top: var(--banner-offset, 0)">
-    <span class="material-symbols-outlined text-primary md:hidden" style="font-variation-settings:'FILL' 1">restaurant</span>
-    <h1 id="topbar-title" class="text-headline-sm flex-1">Registro de Compra</h1>
-    <button id="btn-theme-toggle" class="text-on-surface-variant hover:text-primary active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full md:hidden" title="Alternar tema">
-      <span id="theme-toggle-icon" class="material-symbols-outlined text-[24px]">dark_mode</span>
-    </button>
   </header>
 
   <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
-  <main id="main" class="mt-14 px-4 pt-4 space-y-4 md:ml-64 md:px-8 md:py-6 transition-all">
+  <main id="main" class="mt-14 px-4 pt-4 space-y-4 max-w-7xl mx-auto md:px-6 md:py-6 transition-all">
 
     <!-- ========== VISTA: REGISTRO ========== -->
     <section id="view-registro" class="view grid grid-cols-1 md:grid-cols-12 gap-6 space-y-4 md:space-y-0">
