@@ -1011,7 +1011,7 @@ function renderAlertas(alertas, precios) {
   if (agotados.length > 0) {
     html += `
       <div onclick="abrirModalListaCompras()" 
-           class="bg-error-container border border-error-container p-3 rounded-xl flex gap-3 cursor-pointer hover:bg-red-100 active:scale-[0.99] transition-all duration-200">
+           class="bg-error-container border border-error-container p-3 rounded-xl flex gap-3 cursor-pointer hover:brightness-95 dark:hover:brightness-110 active:scale-[0.99] transition-all duration-200">
         <span class="material-symbols-outlined text-error">inventory_2</span>
         <div class="flex-1">
           <p class="text-body-sm font-bold text-on-error-container flex items-center justify-between">
