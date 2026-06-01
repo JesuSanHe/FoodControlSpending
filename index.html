@@ -35,41 +35,41 @@
       theme: {
         extend: {
           colors: {
-            'primary':                  '#006948',
-            'on-primary':               '#ffffff',
-            'primary-container':        '#00855d',
-            'on-primary-container':     '#f5fff7',
-            'primary-fixed':            '#85f8c4',
-            'primary-fixed-dim':        '#68dba9',
-            'inverse-primary':          '#68dba9',
-            'secondary':                '#545f73',
-            'on-secondary':             '#ffffff',
-            'secondary-container':      '#d5e0f8',
-            'on-secondary-container':   '#586377',
-            'tertiary':                 '#9b3e3b',
-            'tertiary-container':       '#ba5551',
-            'on-tertiary-container':    '#fffbff',
-            'error':                    '#ba1a1a',
-            'on-error':                 '#ffffff',
-            'error-container':          '#ffdad6',
-            'on-error-container':       '#93000a',
-            'background':               '#f5fbf5',
-            'on-background':            '#171d19',
-            'surface':                  '#f5fbf5',
-            'on-surface':               '#171d19',
-            'surface-variant':          '#dee4de',
-            'on-surface-variant':       '#3d4a42',
-            'surface-container-lowest': '#ffffff',
-            'surface-container-low':    '#eff5ef',
-            'surface-container':        '#e9efe9',
-            'surface-container-high':   '#e4eae4',
-            'surface-container-highest':'#dee4de',
-            'surface-bright':           '#f5fbf5',
-            'surface-dim':              '#d5dcd6',
-            'outline':                  '#6d7a72',
-            'outline-variant':          '#bccac0',
-            'inverse-surface':          '#2c322e',
-            'inverse-on-surface':       '#ecf2ec',
+            'primary':                  'var(--md-primary)',
+            'on-primary':               'var(--md-on-primary)',
+            'primary-container':        'var(--md-primary-container)',
+            'on-primary-container':     'var(--md-on-primary-container)',
+            'primary-fixed':            'var(--md-primary-fixed)',
+            'primary-fixed-dim':        'var(--md-primary-fixed-dim)',
+            'inverse-primary':          'var(--md-inverse-primary)',
+            'secondary':                'var(--md-secondary)',
+            'on-secondary':             'var(--md-on-secondary)',
+            'secondary-container':      'var(--md-secondary-container)',
+            'on-secondary-container':   'var(--md-on-secondary-container)',
+            'tertiary':                 'var(--md-tertiary)',
+            'tertiary-container':       'var(--md-tertiary-container)',
+            'on-tertiary-container':    'var(--md-on-tertiary-container)',
+            'error':                    'var(--md-error)',
+            'on-error':                 'var(--md-on-error)',
+            'error-container':          'var(--md-error-container)',
+            'on-error-container':       'var(--md-on-error-container)',
+            'background':               'var(--md-background)',
+            'on-background':            'var(--md-on-background)',
+            'surface':                  'var(--md-surface)',
+            'on-surface':               'var(--md-on-surface)',
+            'surface-variant':          'var(--md-surface-variant)',
+            'on-surface-variant':       'var(--md-on-surface-variant)',
+            'surface-container-lowest': 'var(--md-surface-container-lowest)',
+            'surface-container-low':    'var(--md-surface-container-low)',
+            'surface-container':        'var(--md-surface-container)',
+            'surface-container-high':   'var(--md-surface-container-high)',
+            'surface-container-highest':'var(--md-surface-container-highest)',
+            'surface-bright':           'var(--md-surface-bright)',
+            'surface-dim':              'var(--md-surface-dim)',
+            'outline':                  'var(--md-outline)',
+            'outline-variant':          'var(--md-outline-variant)',
+            'inverse-surface':          'var(--md-inverse-surface)',
+            'inverse-on-surface':       'var(--md-inverse-on-surface)',
           },
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           fontSize: {
@@ -86,6 +86,82 @@
   </script>
 
   <style>
+    :root {
+      --md-primary: #006948;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #00855d;
+      --md-on-primary-container: #f5fff7;
+      --md-primary-fixed: #85f8c4;
+      --md-primary-fixed-dim: #68dba9;
+      --md-inverse-primary: #68dba9;
+      --md-secondary: #545f73;
+      --md-on-secondary: #ffffff;
+      --md-secondary-container: #d5e0f8;
+      --md-on-secondary-container: #586377;
+      --md-tertiary: #9b3e3b;
+      --md-tertiary-container: #ba5551;
+      --md-on-tertiary-container: #fffbff;
+      --md-error: #ba1a1a;
+      --md-on-error: #ffffff;
+      --md-error-container: #ffdad6;
+      --md-on-error-container: #93000a;
+      --md-background: #f5fbf5;
+      --md-on-background: #171d19;
+      --md-surface: #f5fbf5;
+      --md-on-surface: #171d19;
+      --md-surface-variant: #dee4de;
+      --md-on-surface-variant: #3d4a42;
+      --md-surface-container-lowest: #ffffff;
+      --md-surface-container-low: #eff5ef;
+      --md-surface-container: #e9efe9;
+      --md-surface-container-high: #e4eae4;
+      --md-surface-container-highest: #dee4de;
+      --md-surface-bright: #f5fbf5;
+      --md-surface-dim: #d5dcd6;
+      --md-outline: #6d7a72;
+      --md-outline-variant: #bccac0;
+      --md-inverse-surface: #2c322e;
+      --md-inverse-on-surface: #ecf2ec;
+    }
+
+    .dark {
+      --md-primary: #68dba9;
+      --md-on-primary: #003822;
+      --md-primary-container: #005135;
+      --md-on-primary-container: #85f8c4;
+      --md-primary-fixed: #85f8c4;
+      --md-primary-fixed-dim: #68dba9;
+      --md-inverse-primary: #006948;
+      --md-secondary: #b8c8b4;
+      --md-on-secondary: #243324;
+      --md-secondary-container: #3a4a3a;
+      --md-on-secondary-container: #d4e4d0;
+      --md-tertiary: #ffb4a9;
+      --md-tertiary-container: #ba5551;
+      --md-on-tertiary-container: #ffdad6;
+      --md-error: #ffb4ab;
+      --md-on-error: #690005;
+      --md-error-container: #93000a;
+      --md-on-error-container: #ffdad6;
+      --md-background: #0f1210;
+      --md-on-background: #e1e3e0;
+      --md-surface: #0f1210;
+      --md-on-surface: #e1e3e0;
+      --md-surface-variant: #414943;
+      --md-on-surface-variant: #c1c9c2;
+      --md-surface-container-lowest: #0a0c0a;
+      --md-surface-container-low: #171a18;
+      --md-surface-container: #1b1e1c;
+      --md-surface-container-high: #262a27;
+      --md-surface-container-highest: #313532;
+      --md-surface-bright: #373a38;
+      --md-surface-dim: #171a18;
+      --md-outline: #8b938c;
+      --md-outline-variant: #414943;
+      --md-inverse-surface: #e1e3e0;
+      --md-inverse-on-surface: #171d19;
+    }
+
     body { font-family: 'Inter', sans-serif; }
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -94,8 +170,8 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     /* Nav active state */
-    .nav-item.active .nav-icon { color: #006948; }
-    .nav-item.active .nav-label { color: #006948; font-weight: 600; }
+    .nav-item.active .nav-icon { color: var(--md-primary); }
+    .nav-item.active .nav-label { color: var(--md-primary); font-weight: 600; }
     .nav-item.active::after {
       content: '';
       position: absolute;
@@ -104,7 +180,7 @@
       transform: translateX(-50%);
       width: 70%;
       height: 2px;
-      background: #006948;
+      background: var(--md-primary);
       border-radius: 2px;
     }
     .nav-item { position: relative; }

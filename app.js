@@ -873,7 +873,7 @@ function renderBarChart(historial, periodo) {
     return `
       <div class="flex flex-col items-center gap-1">
         ${h.gasto > 0 ? `<span class="text-[8px] text-on-surface-variant">${fmt.money(h.gasto).replace('$','')}</span>` : ''}
-        <div class="w-5 rounded-t-sm" style="height:${Math.max(pct, 4)}px; background:${isLast ? '#006948' : '#68dba9'}; transition: height 0.8s cubic-bezier(0.34,1.56,0.64,1)"></div>
+        <div class="w-5 rounded-t-sm" style="height:${Math.max(pct, 4)}px; background:${isLast ? 'var(--md-primary)' : 'var(--md-primary-fixed-dim)'}; transition: height 0.8s cubic-bezier(0.34,1.56,0.64,1)"></div>
         <span class="text-[9px] ${isLast ? 'text-primary font-bold' : 'text-on-surface-variant'}">${h.label}</span>
       </div>`;
   }).join('');
