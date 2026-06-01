@@ -936,10 +936,13 @@ window.donutLegendTap = function(cid, idx) {
   tip.classList.remove('opacity-0');
   center.classList.add('opacity-0');
   
+  donutLegendHover(cid, idx, true);
+  
   clearTimeout(tip._t);
   tip._t = setTimeout(() => {
     tip.classList.add('opacity-0');
     center.classList.remove('opacity-0');
+    donutLegendHover(cid, idx, false);
   }, 2500);
 };
 
@@ -947,59 +950,6 @@ window.donutSegmentClick = function(e, cid, idx) {
   e.stopPropagation();
   donutLegendTap(cid, idx);
 };
-
-function donutTap(e, cid) {
-  e.preventDefault();
-  const svg    = document.getElementById(cid + '-svg');
-  const center = document.getElementById(cid + '-center');
-  const tip    = document.getElementById(cid + '-tip');
-  const tipLbl = document.getElementById(cid + '-tip-label');
-  const tipVal = document.getElementById(cid + '-tip-value');
-  const segs   = window._donutData[cid];
-  if (!svg || !segs) return;
-
-  const rect  = svg.getBoundingClientRect();
-  const cx    = rect.left + rect.width  / 2;
-  const cy    = rect.top  + rect.height / 2;
-  const touch = e.touches ? e.touches[0] : e;
-  const dx    = touch.clientX - cx;
-  const dy    = touch.clientY - cy;
-  const dist  = Math.sqrt(dx * dx + dy * dy);
-  const r     = rect.width / 2;
-
-  // Solo responder en el área del anillo (entre 75% y 102% del radio)
-  if (dist < r * 0.75 || dist > r * 1.02) {
-    tip.classList.add('opacity-0');
-    center.classList.remove('opacity-0');
-    return;
-  }
-
-  // Calcular ángulo ajustando el -rotate-90 del CSS
-  let angle = Math.atan2(dy, dx) + Math.PI / 2;
-  if (angle < 0)            angle += 2 * Math.PI;
-  if (angle >= 2 * Math.PI) angle -= 2 * Math.PI;
-
-  // Encontrar el segmento correspondiente al ángulo
-  const totalVal = segs.reduce((s, c) => s + c.value, 0);
-  let cumAngle = 0, found = null;
-  for (const seg of segs) {
-    const segAngle = (seg.value / totalVal) * 2 * Math.PI;
-    if (angle >= cumAngle && angle < cumAngle + segAngle) { found = seg; break; }
-    cumAngle += segAngle;
-  }
-
-  if (found) {
-    tipLbl.textContent = found.label;
-    tipVal.textContent = fmt.money(found.value);
-    tip.classList.remove('opacity-0');
-    center.classList.add('opacity-0');
-    clearTimeout(tip._t);
-    tip._t = setTimeout(() => {
-      tip.classList.add('opacity-0');
-      center.classList.remove('opacity-0');
-    }, 2500);
-  }
-}
 
 function renderBarChart(historial, periodo) {
   if (!historial || historial.length === 0) {
