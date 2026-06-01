@@ -375,13 +375,16 @@ async function ajustarStock(producto, delta) {
 function initInventario() {
   // Filtro de texto
   const inp = document.getElementById('inv-filter');
-  inp.addEventListener('input', renderInventario);
+  if (inp) inp.addEventListener('input', renderInventario);
 
   // Chips de categoría
   renderCatChips();
 
-  // Botón lista de compras
-  document.getElementById('btn-lista-compras').addEventListener('click', abrirModalListaCompras);
+  // Botón lista de compras (móvil y escritorio)
+  const btnList = document.getElementById('btn-lista-compras');
+  if (btnList) btnList.addEventListener('click', abrirModalListaCompras);
+  const btnListDesktop = document.getElementById('btn-lista-compras-desktop');
+  if (btnListDesktop) btnListDesktop.addEventListener('click', abrirModalListaCompras);
 }
 
 // ------------------------------------------------------------------
@@ -654,98 +657,116 @@ function renderPanel() {
   const diffAbs = Math.abs(kpis.balance);
 
   document.getElementById('panel-content').innerHTML = `
-    <!-- KPIs -->
-    <div class="grid grid-cols-2 gap-3 reveal-card">
-      <div class="col-span-2 bg-surface-container-low border border-outline-variant p-4 rounded-xl">
-        <span class="text-label-sm text-on-surface-variant">Gasto Total</span>
-        <p class="text-display-lg text-primary font-bold mt-1">${fmt.money(kpis.gastoTotal)}</p>
-      </div>
-      <div class="bg-surface border border-outline-variant p-3 rounded-xl">
-        <span class="material-symbols-outlined text-secondary">groups</span>
-        <p class="text-label-sm text-on-surface-variant mt-1">Promedio / Persona</p>
-        <p class="text-headline-sm font-bold">${fmt.money(kpis.promedioPersona)}</p>
-      </div>
-      <div class="bg-surface border border-outline-variant p-3 rounded-xl">
-        <span class="material-symbols-outlined text-secondary">shopping_cart</span>
-        <p class="text-label-sm text-on-surface-variant mt-1">Viajes de compra</p>
-        <p class="text-headline-sm font-bold">${kpis.viajes}</p>
-      </div>
-    </div>
-
-    <!-- Balance entre personas -->
-    <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
-      <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
-        <span class="material-symbols-outlined text-primary text-[18px]">balance</span> Balance
-      </h3>
-      <div class="flex items-center justify-between">
-        <div class="text-center">
-          <p class="text-label-sm text-on-surface-variant">${CONFIG.USUARIOS[0]}</p>
-          <p class="text-headline-sm font-bold text-on-surface">${fmt.money(kpis.gastoJesus)}</p>
-          <p class="text-label-sm text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoJesus/kpis.gastoTotal*100 : 0)}%</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Columna Principal (KPIs, Balance y Gráficas) - 8/12 en escritorio -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- KPIs y Balance -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <!-- KPIs -->
+          <div class="md:col-span-7 grid grid-cols-2 gap-3 reveal-card">
+            <div class="col-span-2 bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+              <span class="text-label-sm text-on-surface-variant">Gasto Total</span>
+              <p class="text-display-lg text-primary font-bold mt-1">${fmt.money(kpis.gastoTotal)}</p>
+            </div>
+            <div class="bg-surface border border-outline-variant p-3 rounded-xl flex flex-col justify-center">
+              <span class="material-symbols-outlined text-secondary">groups</span>
+              <p class="text-[10px] text-on-surface-variant mt-1 leading-tight">Promedio / Persona</p>
+              <p class="text-headline-sm font-bold mt-1">${fmt.money(kpis.promedioPersona).replace('.00','')}</p>
+            </div>
+            <div class="bg-surface border border-outline-variant p-3 rounded-xl flex flex-col justify-center">
+              <span class="material-symbols-outlined text-secondary">shopping_cart</span>
+              <p class="text-[10px] text-on-surface-variant mt-1 leading-tight">Viajes de compra</p>
+              <p class="text-headline-sm font-bold mt-1">${kpis.viajes}</p>
+            </div>
+          </div>
+          
+          <!-- Balance -->
+          <div class="md:col-span-5 bg-surface border border-outline-variant p-4 rounded-xl reveal-card flex flex-col justify-between">
+            <h3 class="text-label-md font-semibold text-on-surface mb-2 flex items-center gap-1">
+              <span class="material-symbols-outlined text-primary text-[18px]">balance</span> Balance
+            </h3>
+            <div class="flex items-center justify-between flex-1 mt-2">
+              <div class="text-center">
+                <p class="text-[10px] text-on-surface-variant">${CONFIG.USUARIOS[0]}</p>
+                <p class="text-body-md font-bold text-on-surface">${fmt.money(kpis.gastoJesus).replace('.00','')}</p>
+                <p class="text-[10px] text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoJesus/kpis.gastoTotal*100 : 0)}%</p>
+              </div>
+              <div class="flex flex-col items-center px-1">
+                ${diffAbs > 0.01 ? `
+                <p class="text-[8px] text-on-surface-variant">${debe} debe</p>
+                <p class="text-label-md font-bold text-primary">${fmt.money(diffAbs / 2).replace('.00','')}</p>
+                <p class="text-[8px] text-on-surface-variant">a ${acreedor}</p>` :
+                `<span class="text-primary text-[10px] font-bold">¡Par! 🎉</span>`}
+              </div>
+              <div class="text-center">
+                <p class="text-[10px] text-on-surface-variant">${CONFIG.USUARIOS[1]}</p>
+                <p class="text-body-md font-bold text-on-surface">${fmt.money(kpis.gastoLilian).replace('.00','')}</p>
+                <p class="text-[10px] text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoLilian/kpis.gastoTotal*100 : 0)}%</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col items-center">
-          ${diffAbs > 0.01 ? `
-          <p class="text-[10px] text-on-surface-variant">${debe} debe</p>
-          <p class="text-headline-sm font-bold text-primary">${fmt.money(diffAbs / 2)}</p>
-          <p class="text-[10px] text-on-surface-variant">a ${acreedor}</p>` :
-          `<span class="text-primary text-[11px] font-bold">¡Par! 🎉</span>`}
+
+        <!-- Gráficos de Donas lado a lado en escritorio -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Distribución de Gastos -->
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
+            <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
+              <span class="material-symbols-outlined text-primary text-[18px]">donut_small</span>
+              Distribución de Gastos
+            </h3>
+            <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
+              ${['todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]].map((v, i) => {
+                const labels = ['Todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]];
+                return `<button onclick="setUsuarioPanel('${v}')"
+                  class="px-3 py-1 rounded-full text-label-sm whitespace-nowrap border transition-colors
+                         ${state.panel.usuario === v ? 'bg-primary text-on-primary border-primary' : 'bg-surface border-outline-variant text-on-surface-variant'}">
+                  ${labels[i]}
+                </button>`;
+              }).join('')}
+            </div>
+            ${renderDonutChart(donutData, donutTotal, donutLabel)}
+          </div>
+
+          <!-- Gasto por Categoría -->
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
+            <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
+              <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
+            </h3>
+            <div class="mb-4 h-[30px] flex items-center">
+              <span class="text-label-sm text-on-surface-variant">Filtrado por: <b>${state.panel.usuario === 'todos' ? 'Todos' : state.panel.usuario}</b></span>
+            </div>
+            ${(() => {
+              const catListData = state.panel.usuario === 'todos'
+                ? categorias
+                : state.panel.usuario === 'Lilian'
+                ? (categoriasLilian || [])
+                : (categoriasJesus || []);
+              const catSegs  = catListData.map(c => ({
+                label: c.nombre, value: c.total, color: catColor(c.nombre)
+              }));
+              const catTotal = catListData.reduce((s, c) => s + c.total, 0);
+              return renderDonutChart(catSegs, catTotal, 'Categorías');
+            })()}
+          </div>
         </div>
-        <div class="text-center">
-          <p class="text-label-sm text-on-surface-variant">${CONFIG.USUARIOS[1]}</p>
-          <p class="text-headline-sm font-bold text-on-surface">${fmt.money(kpis.gastoLilian)}</p>
-          <p class="text-label-sm text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoLilian/kpis.gastoTotal*100 : 0)}%</p>
+
+        <!-- Historial de Gasto -->
+        <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
+          <h3 class="text-label-md font-semibold text-on-surface mb-3">Historial</h3>
+          ${renderBarChart(historial, state.panel.periodo)}
         </div>
+
       </div>
-    </div>
 
-    <!-- Distribución de Gastos -->
-    <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-label-md font-semibold text-on-surface flex items-center gap-1">
-          <span class="material-symbols-outlined text-primary text-[18px]">donut_small</span>
-          Distribución de Gastos
-        </h3>
+      <!-- Columna Derecha (Alertas y Comparador de Precios) - 4/12 en escritorio -->
+      <div class="lg:col-span-4 space-y-6">
+        ${renderAlertas(alertas, precios)}
       </div>
-      <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-        ${['todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]].map((v, i) => {
-          const labels = ['Todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]];
-          return `<button onclick="setUsuarioPanel('${v}')"
-            class="px-3 py-1 rounded-full text-label-sm whitespace-nowrap border transition-colors
-                   ${state.panel.usuario === v ? 'bg-primary text-on-primary border-primary' : 'bg-surface border-outline-variant text-on-surface-variant'}">
-            ${labels[i]}
-          </button>`;
-        }).join('')}
-      </div>
-      ${renderDonutChart(donutData, donutTotal, donutLabel)}
-    </div>
 
-    <!-- Gasto por Categoría -->
-    <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
-      <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
-        <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
-      </h3>
-      ${(() => {
-        const catListData = state.panel.usuario === 'todos'
-          ? categorias
-          : state.panel.usuario === 'Lilian'
-          ? (categoriasLilian || [])
-          : (categoriasJesus || []);
-        const catSegs  = catListData.map(c => ({
-          label: c.nombre, value: c.total, color: catColor(c.nombre)
-        }));
-        const catTotal = catListData.reduce((s, c) => s + c.total, 0);
-        return renderDonutChart(catSegs, catTotal, 'Categorías');
-      })()}
     </div>
-
-    <!-- Historial de Gasto -->
-    <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
-      <h3 class="text-label-md font-semibold text-on-surface mb-3">Historial</h3>
-      ${renderBarChart(historial, state.panel.periodo)}
-    </div>
-
-    <!-- Alertas -->
-    ${renderAlertas(alertas, precios)}
   `;
 }
 
@@ -803,8 +824,8 @@ function renderDonutChart(segments, total, centerLabel) {
     </div>`).join('');
 
   return `
-    <div class="flex flex-col items-center gap-4">
-      <div class="relative w-40 h-40">
+    <div class="flex flex-col sm:flex-row items-center gap-6 justify-center">
+      <div class="relative w-40 h-40 flex-shrink-0">
         <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
           onclick="donutTap(event,'${cid}')">${circles}</svg>
         <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 pointer-events-none">
@@ -816,7 +837,9 @@ function renderDonutChart(segments, total, centerLabel) {
           <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-2 w-full">${legend}</div>
+      <div class="flex flex-col gap-1.5 w-full sm:flex-1 max-h-[160px] overflow-y-auto pr-1">
+        ${legend}
+      </div>
     </div>`;
 }
 
@@ -1130,28 +1153,37 @@ function actualizarAutocompletados() {
 // Tema Claro / Oscuro (Dark Mode)
 // ------------------------------------------------------------------
 function initThemeToggle() {
-  const btn = document.getElementById('btn-theme-toggle');
-  const icon = document.getElementById('theme-toggle-icon');
-  if (!btn || !icon) return;
+  const btnHeader = document.getElementById('btn-theme-toggle');
+  const btnSidebar = document.getElementById('btn-theme-toggle-sidebar');
+  const iconHeader = document.getElementById('theme-toggle-icon');
+  const iconSidebar = document.querySelector('.theme-toggle-icon-sidebar');
+
+  const updateIcons = (isDark) => {
+    if (iconHeader) iconHeader.textContent = isDark ? 'light_mode' : 'dark_mode';
+    if (iconSidebar) iconSidebar.textContent = isDark ? 'light_mode' : 'dark_mode';
+  };
 
   // Actualizar icono inicial
   const isDark = document.documentElement.classList.contains('dark');
-  icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+  updateIcons(isDark);
 
-  btn.addEventListener('click', () => {
+  const toggleTheme = () => {
     const currentDark = document.documentElement.classList.contains('dark');
     if (currentDark) {
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
       localStorage.setItem('theme', 'light');
-      icon.textContent = 'dark_mode';
+      updateIcons(false);
     } else {
       document.documentElement.classList.remove('light');
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
-      icon.textContent = 'light_mode';
+      updateIcons(true);
     }
-  });
+  };
+
+  if (btnHeader) btnHeader.addEventListener('click', toggleTheme);
+  if (btnSidebar) btnSidebar.addEventListener('click', toggleTheme);
 }
 
 // ------------------------------------------------------------------
