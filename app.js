@@ -372,12 +372,164 @@ function initInventario() {
   renderCatChips();
 
   // Botón lista de compras
-  document.getElementById('btn-lista-compras').addEventListener('click', () => {
-    const faltantes = state.inventario.filter(i => i.cantidad <= 0);
-    if (faltantes.length === 0) return showToast('¡No hay productos agotados!');
-    const lista = faltantes.map(i => `• ${i.producto}`).join('\n');
-    alert('Lista de compras sugerida:\n\n' + lista);
+  document.getElementById('btn-lista-compras').addEventListener('click', abrirModalListaCompras);
+}
+
+// ------------------------------------------------------------------
+// Modal de Lista de Compras
+// ------------------------------------------------------------------
+let _shoppingListFilter = 'todos';
+
+function abrirModalListaCompras() {
+  const faltantes = state.inventario.filter(i => i.cantidad <= 0);
+  if (faltantes.length === 0) {
+    return showToast('¡No hay productos agotados!', 'error');
+  }
+
+  _shoppingListFilter = 'todos';
+
+  // Eliminar modal anterior si existe
+  cerrarModalListaCompras();
+
+  // Crear contenedor del modal
+  const modal = document.createElement('div');
+  modal.id = 'shopping-list-modal';
+  modal.className = 'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300 opacity-0';
+  
+  // Estructura del modal (usa reveal-card para la animación M3)
+  modal.innerHTML = `
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-2xl relative max-h-[85vh] transition-transform duration-300 transform scale-95 reveal-card">
+      <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+        <h3 class="text-headline-sm font-semibold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">shopping_basket</span>
+          Lista de Compras
+        </h3>
+        <button onclick="cerrarModalListaCompras()" class="text-on-surface-variant hover:text-error active:scale-95 transition-transform flex items-center justify-center">
+          <span class="material-symbols-outlined text-[24px]">close</span>
+        </button>
+      </div>
+
+      <!-- Chips de Categoría -->
+      <div id="modal-cat-chips" class="flex gap-2 overflow-x-auto no-scrollbar py-1"></div>
+
+      <!-- Lista de Artículos -->
+      <div id="modal-item-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[45vh] min-h-[150px]"></div>
+
+      <div class="border-t border-outline-variant pt-3 flex gap-3">
+        <button onclick="copiarListaAlPortapapeles()" class="flex-1 bg-primary text-on-primary rounded-xl py-2.5 text-label-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+          <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          Copiar Lista
+        </button>
+        <button onclick="cerrarModalListaCompras()" class="flex-1 bg-surface-container text-on-surface-variant border border-outline-variant rounded-xl py-2.5 text-label-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Animación de entrada (fade-in)
+  setTimeout(() => {
+    modal.classList.remove('opacity-0');
+  }, 10);
+
+  // Cerrar al hacer clic en el fondo
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarModalListaCompras();
   });
+
+  // Dibujar el contenido inicial
+  renderModalContent(faltantes);
+}
+
+function renderModalContent(faltantes) {
+  const containerChips = document.getElementById('modal-cat-chips');
+  const containerList  = document.getElementById('modal-item-list');
+  if (!containerChips || !containerList) return;
+
+  // Obtener categorías únicas con productos agotados
+  const catsAgotadas = [...new Set(faltantes.map(i => i.categoria))];
+
+  // Renderizar chips de categorías
+  const chips = ['Todos', ...catsAgotadas];
+  containerChips.innerHTML = chips.map(c => {
+    const isSelected = _shoppingListFilter === c.toLowerCase();
+    return `
+      <button class="px-3 py-1.5 rounded-full text-label-sm whitespace-nowrap border transition-colors
+                     ${isSelected
+                       ? 'bg-primary text-on-primary border-primary'
+                       : 'bg-surface border-outline-variant text-on-surface-variant'}"
+              onclick="setModalCatFilter('${c}')">
+        ${c}
+      </button>`;
+  }).join('');
+
+  // Filtrar productos
+  const itemsFiltrados = _shoppingListFilter === 'todos'
+    ? faltantes
+    : faltantes.filter(i => i.categoria?.toLowerCase() === _shoppingListFilter);
+
+  // Renderizar lista
+  if (itemsFiltrados.length === 0) {
+    containerList.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-8 text-on-surface-variant gap-1">
+        <span class="material-symbols-outlined text-3xl opacity-30">inventory_2</span>
+        <p class="text-body-sm text-center">No hay productos en esta categoría</p>
+      </div>`;
+    return;
+  }
+
+  containerList.innerHTML = itemsFiltrados.map(item => `
+    <div class="flex items-center gap-3 py-2 border-b border-outline-variant last:border-0">
+      <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${catColor(item.categoria)}"></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-body-sm font-semibold text-on-surface truncate">${item.producto}</p>
+        <p class="text-label-sm text-on-surface-variant">${item.categoria}</p>
+      </div>
+      <span class="text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">${item.unidad}</span>
+    </div>
+  `).join('');
+}
+
+function setModalCatFilter(cat) {
+  _shoppingListFilter = cat.toLowerCase();
+  const faltantes = state.inventario.filter(i => i.cantidad <= 0);
+  renderModalContent(faltantes);
+}
+
+function copiarListaAlPortapapeles() {
+  const faltantes = state.inventario.filter(i => i.cantidad <= 0);
+  const itemsFiltrados = _shoppingListFilter === 'todos'
+    ? faltantes
+    : faltantes.filter(i => i.categoria?.toLowerCase() === _shoppingListFilter);
+
+  if (itemsFiltrados.length === 0) return;
+
+  const headerText = _shoppingListFilter === 'todos' 
+    ? 'Lista de Compras sugerida:\n' 
+    : `Lista de Compras sugerida — ${_shoppingListFilter.charAt(0).toUpperCase() + _shoppingListFilter.slice(1)}:\n`;
+
+  const textToCopy = headerText + itemsFiltrados.map(i => `• ${i.producto} (${i.categoria})`).join('\n');
+
+  navigator.clipboard.writeText(textToCopy)
+    .then(() => {
+      showToast('✓ Lista copiada al portapapeles');
+    })
+    .catch(err => {
+      showToast('Error al copiar la lista', 'error');
+      console.error(err);
+    });
+}
+
+function cerrarModalListaCompras() {
+  const modal = document.getElementById('shopping-list-modal');
+  if (modal) {
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+      modal.remove();
+    }, 300);
+  }
 }
 
 function renderCatChips() {
