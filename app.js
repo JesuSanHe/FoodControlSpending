@@ -611,6 +611,17 @@ function renderPanel() {
 
   const { kpis, categorias, categoriasJesus, categoriasLilian, historial, alertas, precios } = d;
 
+  // Corregir la agrupación del día de la semana para el periodo de la semana
+  if (state.panel.periodo === 'semana' && historial) {
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const now = new Date();
+    historial.forEach((h, idx) => {
+      const date = new Date(now);
+      date.setDate(now.getDate() - (6 - idx));
+      h.label = diasSemana[date.getDay()];
+    });
+  }
+
   // Datos del donut según filtro de usuario
   // NOTA: No comparamos 'Jesús' (tiene acento, encoding frágil).
   // Comparamos 'Lilian' (sin acento) y dejamos Jesús en el bloque else.
