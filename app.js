@@ -570,11 +570,17 @@ function setPeriodoPanel(periodo) {
 // ------------------------------------------------------------------
 // Gráficas SVG
 // ------------------------------------------------------------------
+let _donutCounter = 0;
+window._donutData = {};
+
 function renderDonutChart(segments, total, centerLabel) {
   const validSegs = segments.filter(s => s.value > 0);
   if (validSegs.length === 0 || total <= 0) {
     return '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos</p>';
   }
+
+  const cid = 'dn' + (_donutCounter++);
+  window._donutData[cid] = validSegs;
 
   let offset = 0;
   const circles = validSegs.map(seg => {
@@ -600,14 +606,73 @@ function renderDonutChart(segments, total, centerLabel) {
   return `
     <div class="flex flex-col items-center gap-4">
       <div class="relative w-40 h-40">
-        <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">${circles}</svg>
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
+          onclick="donutTap(event,'${cid}')"
+          ontouchstart="donutTap(event,'${cid}')">${circles}</svg>
+        <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200">
           <span class="text-[10px] text-on-surface-variant">${centerLabel}</span>
           <span class="text-headline-sm font-bold text-on-surface">${fmt.money(total)}</span>
+        </div>
+        <div id="${cid}-tip" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+          <span id="${cid}-tip-label" class="text-[9px] text-on-surface-variant text-center px-2 leading-tight"></span>
+          <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
       <div class="flex flex-col gap-2 w-full">${legend}</div>
     </div>`;
+}
+
+function donutTap(e, cid) {
+  e.preventDefault();
+  const svg    = document.getElementById(cid + '-svg');
+  const center = document.getElementById(cid + '-center');
+  const tip    = document.getElementById(cid + '-tip');
+  const tipLbl = document.getElementById(cid + '-tip-label');
+  const tipVal = document.getElementById(cid + '-tip-value');
+  const segs   = window._donutData[cid];
+  if (!svg || !segs) return;
+
+  const rect  = svg.getBoundingClientRect();
+  const cx    = rect.left + rect.width  / 2;
+  const cy    = rect.top  + rect.height / 2;
+  const touch = e.touches ? e.touches[0] : e;
+  const dx    = touch.clientX - cx;
+  const dy    = touch.clientY - cy;
+  const dist  = Math.sqrt(dx * dx + dy * dy);
+  const r     = rect.width / 2;
+
+  // Solo responder en el área del anillo (entre 38% y 102% del radio)
+  if (dist < r * 0.38 || dist > r * 1.02) {
+    tip.classList.add('opacity-0');
+    center.classList.remove('opacity-0');
+    return;
+  }
+
+  // Calcular ángulo ajustando el -rotate-90 del CSS
+  let angle = Math.atan2(dy, dx) + Math.PI / 2;
+  if (angle < 0)            angle += 2 * Math.PI;
+  if (angle >= 2 * Math.PI) angle -= 2 * Math.PI;
+
+  // Encontrar el segmento correspondiente al ángulo
+  const totalVal = segs.reduce((s, c) => s + c.value, 0);
+  let cumAngle = 0, found = null;
+  for (const seg of segs) {
+    const segAngle = (seg.value / totalVal) * 2 * Math.PI;
+    if (angle >= cumAngle && angle < cumAngle + segAngle) { found = seg; break; }
+    cumAngle += segAngle;
+  }
+
+  if (found) {
+    tipLbl.textContent = found.label;
+    tipVal.textContent = fmt.money(found.value);
+    tip.classList.remove('opacity-0');
+    center.classList.add('opacity-0');
+    clearTimeout(tip._t);
+    tip._t = setTimeout(() => {
+      tip.classList.add('opacity-0');
+      center.classList.remove('opacity-0');
+    }, 2500);
+  }
 }
 
 function renderBarChart(historial, periodo) {
