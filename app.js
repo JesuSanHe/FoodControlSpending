@@ -138,6 +138,20 @@ function initRegistro() {
 
   // Botón guardar compra
   document.getElementById('btn-guardar').addEventListener('click', guardarCompra);
+
+  // Atajo de teclado (tecla Enter)
+  const inputs = ['reg-nombre', 'reg-categoria', 'reg-unidad', 'reg-cantidad', 'reg-precio', 'reg-vencimiento'];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          agregarAlCarrito();
+        }
+      });
+    }
+  });
 }
 
 function agregarAlCarrito() {
@@ -178,6 +192,38 @@ function renderCart() {
   spanCount.textContent = state.cart.length + (state.cart.length === 1 ? ' artículo' : ' artículos');
   spanSub.textContent   = fmt.money(total);
   btnGuardar.disabled   = state.cart.length === 0;
+
+  // Actualizar comparador de ticket físico
+  const inputTicket = document.getElementById('cart-ticket-total');
+  const divMatch = document.getElementById('cart-ticket-match');
+  const updateTicketMatch = () => {
+    if (!inputTicket || !divMatch) return;
+    const ticketVal = parseFloat(inputTicket.value);
+    if (isNaN(ticketVal) || ticketVal <= 0) {
+      divMatch.classList.add('hidden');
+      return;
+    }
+    divMatch.classList.remove('hidden');
+    const diff = total - ticketVal;
+    if (Math.abs(diff) < 0.01) {
+      divMatch.className = 'flex items-center justify-end gap-1 text-label-sm font-semibold text-primary';
+      divMatch.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> Coincide`;
+    } else {
+      const diffStr = fmt.money(Math.abs(diff));
+      if (diff > 0) {
+        divMatch.className = 'flex items-center justify-end gap-1 text-label-sm font-semibold text-error';
+        divMatch.innerHTML = `<span class="material-symbols-outlined text-[16px]">warning</span> Sobra ${diffStr}`;
+      } else {
+        divMatch.className = 'flex items-center justify-end gap-1 text-label-sm font-semibold text-[#f57f17]';
+        divMatch.innerHTML = `<span class="material-symbols-outlined text-[16px]">warning</span> Falta ${diffStr}`;
+      }
+    }
+  };
+  updateTicketMatch();
+  if (inputTicket && !inputTicket._hasListener) {
+    inputTicket._hasListener = true;
+    inputTicket.addEventListener('input', updateTicketMatch);
+  }
 
   if (state.cart.length === 0) {
     container.innerHTML = `
@@ -230,6 +276,11 @@ async function guardarCompra() {
   } else {
     showToast(`✓ ${res._demo ? 'Modo demo: ' : ''}${state.cart.length} producto(s) guardados`);
     state.cart = [];
+    
+    // Limpiar total del ticket
+    const inputTicket = document.getElementById('cart-ticket-total');
+    if (inputTicket) inputTicket.value = '';
+
     renderCart();
     // Forzar recarga del inventario la próxima vez
     state.inventario = [];
@@ -799,19 +850,26 @@ function renderDonutChart(segments, total, centerLabel) {
   window._donutData[cid] = validSegs;
 
   let offset = 0;
-  const circles = validSegs.map(seg => {
+  const circles = validSegs.map((seg, idx) => {
     const pct = (seg.value / total) * 100;
-    const el = `<circle cx="18" cy="18" fill="transparent" r="15.915"
+    const el = `<circle id="${cid}-seg-${idx}" cx="18" cy="18" fill="transparent" r="15.915"
       stroke="${seg.color}" stroke-width="4"
       stroke-dasharray="${pct.toFixed(2)} ${(100 - pct).toFixed(2)}"
       stroke-dashoffset="${-offset.toFixed(2)}"
-      style="transition: stroke-dasharray 0.6s ease"/>`;
+      class="transition-all duration-300 cursor-pointer"
+      style="transition: stroke-dasharray 0.6s ease, stroke-width 0.2s ease, opacity 0.2s ease; transform-origin: center;"
+      onmouseenter="donutLegendHover('${cid}', ${idx}, true)"
+      onmouseleave="donutLegendHover('${cid}', ${idx}, false)"
+      onclick="donutSegmentClick(event, '${cid}', ${idx})"/>`;
     offset += pct;
     return el;
   }).join('');
 
-  const legend = validSegs.map(seg => `
-    <div class="flex items-center justify-between gap-4 min-w-0 w-full">
+  const legend = validSegs.map((seg, idx) => `
+    <div class="flex items-center justify-between gap-4 min-w-0 w-full cursor-pointer hover:bg-surface-container/40 px-2 py-1 rounded-lg transition-colors"
+         onmouseenter="donutLegendHover('${cid}', ${idx}, true)"
+         onmouseleave="donutLegendHover('${cid}', ${idx}, false)"
+         onclick="donutLegendTap('${cid}', ${idx})">
       <div class="flex items-center gap-2 min-w-0">
         <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${seg.color}"></div>
         <span class="text-label-sm text-on-surface-variant truncate">${seg.label}</span>
@@ -822,8 +880,7 @@ function renderDonutChart(segments, total, centerLabel) {
   return `
     <div class="flex flex-col 2xl:flex-row items-center gap-6 2xl:gap-4 justify-center w-full min-w-0">
       <div class="relative w-40 h-40 2xl:w-32 2xl:h-32 flex-shrink-0">
-        <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
-          onclick="donutTap(event,'${cid}')">${circles}</svg>
+        <svg id="${cid}-svg" class="w-full h-full -rotate-90" viewBox="0 0 36 36">${circles}</svg>
         <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 pointer-events-none">
           <span class="text-[10px] text-on-surface-variant">${centerLabel}</span>
           <span class="text-headline-sm 2xl:text-body-md font-bold text-on-surface">${fmt.money(total)}</span>
@@ -838,6 +895,58 @@ function renderDonutChart(segments, total, centerLabel) {
       </div>
     </div>`;
 }
+
+// ------------------------------------------------------------------
+// Interacciones Dinámicas del Gráfico de Dona
+// ------------------------------------------------------------------
+window.donutLegendHover = function(cid, idx, isHover) {
+  const segs = window._donutData[cid];
+  if (!segs) return;
+  
+  for (let i = 0; i < segs.length; i++) {
+    const circle = document.getElementById(`${cid}-seg-${i}`);
+    if (circle) {
+      if (isHover) {
+        if (i === idx) {
+          circle.style.strokeWidth = '5.2';
+          circle.style.opacity = '1';
+        } else {
+          circle.style.opacity = '0.3';
+        }
+      } else {
+        circle.style.strokeWidth = '4';
+        circle.style.opacity = '1';
+      }
+    }
+  }
+};
+
+window.donutLegendTap = function(cid, idx) {
+  const center = document.getElementById(cid + '-center');
+  const tip    = document.getElementById(cid + '-tip');
+  const tipLbl = document.getElementById(cid + '-tip-label');
+  const tipVal = document.getElementById(cid + '-tip-value');
+  const segs   = window._donutData[cid];
+  if (!segs || !segs[idx]) return;
+
+  const found = segs[idx];
+  tipLbl.textContent = found.label;
+  tipVal.textContent = fmt.money(found.value);
+  
+  tip.classList.remove('opacity-0');
+  center.classList.add('opacity-0');
+  
+  clearTimeout(tip._t);
+  tip._t = setTimeout(() => {
+    tip.classList.add('opacity-0');
+    center.classList.remove('opacity-0');
+  }, 2500);
+};
+
+window.donutSegmentClick = function(e, cid, idx) {
+  e.stopPropagation();
+  donutLegendTap(cid, idx);
+};
 
 function donutTap(e, cid) {
   e.preventDefault();
