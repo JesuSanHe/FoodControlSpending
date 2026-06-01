@@ -827,6 +827,7 @@ function setPeriodoPanel(periodo) {
   document.querySelectorAll('.periodo-chip').forEach(el => {
     el.classList.toggle('bg-primary', el.dataset.periodo === periodo);
     el.classList.toggle('text-on-primary', el.dataset.periodo === periodo);
+    el.classList.toggle('border-primary', el.dataset.periodo === periodo);
     el.classList.toggle('bg-surface', el.dataset.periodo !== periodo);
     el.classList.toggle('border-outline-variant', el.dataset.periodo !== periodo);
     el.classList.toggle('text-on-surface-variant', el.dataset.periodo !== periodo);
