@@ -8,7 +8,7 @@
 // Estado global
 // ------------------------------------------------------------------
 const state = {
-  view:        'registro',          // 'registro' | 'inventario' | 'panel'
+  view:        'panel',          // 'registro' | 'inventario' | 'panel'
   cart:        [],                  // productos en el carrito actual
   currentUser: CONFIG.USUARIOS[0], // usuario seleccionado en registro
   inventario:  [],
@@ -380,7 +380,29 @@ function initInventario() {
 // ------------------------------------------------------------------
 let _shoppingListFilter = 'todos';
 
-function abrirModalListaCompras() {
+async function abrirModalListaCompras() {
+  // Si el inventario no se ha cargado en memoria, lo traemos de la API primero
+  if (!state.inventario || state.inventario.length === 0) {
+    showToast('Cargando inventario…');
+    try {
+      const res = await apiGet({ action: 'getInventario' });
+      const filterImmediate = list => list.filter(i => {
+        const cat = CONFIG.CATEGORIAS.find(c => c.nombre === i.categoria);
+        return !cat || !cat.esConsumoInmediato;
+      });
+
+      if (res._demo) {
+        state.inventario = filterImmediate(demoInventario());
+      } else if (res.error) {
+        return showToast('Error al cargar inventario: ' + res.error, 'error');
+      } else {
+        state.inventario = filterImmediate(res.inventario || []);
+      }
+    } catch (e) {
+      return showToast('Error de conexión', 'error');
+    }
+  }
+
   const faltantes = state.inventario.filter(i => i.cantidad <= 0);
   if (faltantes.length === 0) {
     return showToast('¡No hay productos agotados!', 'error');
@@ -869,10 +891,16 @@ function renderAlertas(alertas, precios) {
 
   if (agotados.length > 0) {
     html += `
-      <div class="bg-error-container border border-error-container p-3 rounded-xl flex gap-3">
+      <div onclick="abrirModalListaCompras()" 
+           class="bg-error-container border border-error-container p-3 rounded-xl flex gap-3 cursor-pointer hover:bg-red-100 active:scale-[0.99] transition-all duration-200">
         <span class="material-symbols-outlined text-error">inventory_2</span>
-        <div>
-          <p class="text-body-sm font-bold text-on-error-container">Productos agotados</p>
+        <div class="flex-1">
+          <p class="text-body-sm font-bold text-on-error-container flex items-center justify-between">
+            Productos agotados
+            <span class="text-[10px] bg-error text-on-error px-1.5 py-0.5 rounded font-normal flex items-center gap-0.5">
+              Ver lista <span class="material-symbols-outlined text-[10px]">open_in_new</span>
+            </span>
+          </p>
           ${agotados.slice(0, 5).map(i => `<p class="text-body-sm text-on-surface-variant">· ${i.producto}</p>`).join('')}
           ${agotados.length > 5 ? `<p class="text-label-sm text-on-surface-variant">…y ${agotados.length - 5} más</p>` : ''}
         </div>
@@ -1040,7 +1068,7 @@ function init() {
   });
 
   // Mostrar vista inicial
-  showView('registro');
+  showView('panel');
 }
 
 document.addEventListener('DOMContentLoaded', init);
