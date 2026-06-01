@@ -660,7 +660,7 @@ function renderPanel() {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
       <!-- Columna Principal (KPIs, Balance y Gráficas) - 8/12 en escritorio -->
-      <div class="lg:col-span-8 space-y-6">
+      <div class="lg:col-span-8 space-y-6 min-w-0">
         
         <!-- KPIs y Balance -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -712,7 +712,7 @@ function renderPanel() {
         <!-- Gráficos de Donas lado a lado en escritorio -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Distribución de Gastos -->
-          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0">
             <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
               <span class="material-symbols-outlined text-primary text-[18px]">donut_small</span>
               Distribución de Gastos
@@ -731,7 +731,7 @@ function renderPanel() {
           </div>
 
           <!-- Gasto por Categoría -->
-          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card">
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0">
             <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
               <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
             </h3>
@@ -758,7 +758,7 @@ function renderPanel() {
       </div>
 
       <!-- Columna Derecha (Alertas y Comparador de Precios) - 4/12 en escritorio -->
-      <div class="lg:col-span-4 space-y-6">
+      <div class="lg:col-span-4 space-y-6 min-w-0">
         ${renderAlertas(alertas, precios)}
       </div>
 
@@ -820,20 +820,20 @@ function renderDonutChart(segments, total, centerLabel) {
     </div>`).join('');
 
   return `
-    <div class="flex flex-col 2xl:flex-row items-center gap-6 justify-center w-full min-w-0">
-      <div class="relative w-40 h-40 flex-shrink-0">
+    <div class="flex flex-col 2xl:flex-row items-center gap-6 2xl:gap-4 justify-center w-full min-w-0">
+      <div class="relative w-40 h-40 2xl:w-32 2xl:h-32 flex-shrink-0">
         <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
           onclick="donutTap(event,'${cid}')">${circles}</svg>
         <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 pointer-events-none">
           <span class="text-[10px] text-on-surface-variant">${centerLabel}</span>
-          <span class="text-headline-sm font-bold text-on-surface">${fmt.money(total)}</span>
+          <span class="text-headline-sm 2xl:text-body-md font-bold text-on-surface">${fmt.money(total)}</span>
         </div>
         <div id="${cid}-tip" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
           <span id="${cid}-tip-label" class="text-[9px] text-on-surface-variant text-center px-2 leading-tight"></span>
           <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-1.5 w-full 2xl:flex-1 min-w-0">
+      <div class="flex flex-col gap-1.5 w-full 2xl:w-auto 2xl:flex-1 min-w-0">
         ${legend}
       </div>
     </div>`;
