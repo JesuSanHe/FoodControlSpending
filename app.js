@@ -1069,9 +1069,15 @@ function renderAlertas(alertas, precios) {
 // Helpers UI
 // ------------------------------------------------------------------
 function renderSkeleton(n) {
-  return Array(n).fill('').map(() =>
-    `<div class="h-20 bg-surface-container rounded-xl animate-pulse mb-3"></div>`
-  ).join('');
+  return `
+    <div class="flex flex-col items-center justify-center py-20 gap-3 text-on-surface-variant opacity-0" style="animation: skeletonFadeIn 0.3s ease forwards 0.15s;">
+      <span class="material-symbols-outlined animate-spin text-4xl text-primary">autorenew</span>
+      <span class="text-label-md">Cargando...</span>
+      <style>
+        @keyframes skeletonFadeIn { to { opacity: 1; } }
+      </style>
+    </div>
+  `;
 }
 
 function renderError(msg) {
