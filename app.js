@@ -763,7 +763,7 @@ function renderPanel() {
         <!-- Gráficos de Donas lado a lado en escritorio -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Distribución de Gastos -->
-          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0">
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0 flex flex-col">
             <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
               <span class="material-symbols-outlined text-primary text-[18px]">donut_small</span>
               Distribución de Gastos
@@ -772,7 +772,7 @@ function renderPanel() {
               ${['todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]].map((v, i) => {
                 const labels = ['Todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]];
                 return `<button onclick="setUsuarioPanel('${v}')"
-                  class="px-3 py-1 rounded-full text-label-sm whitespace-nowrap border transition-colors
+                  class="px-3 py-1 rounded-full text-label-sm whitespace-nowrap border transition-colors hover:bg-surface-container
                          ${state.panel.usuario === v ? 'bg-primary text-on-primary border-primary' : 'bg-surface border-outline-variant text-on-surface-variant'}">
                   ${labels[i]}
                 </button>`;
@@ -782,7 +782,7 @@ function renderPanel() {
           </div>
 
           <!-- Gasto por Categoría -->
-          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0">
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card min-w-0 flex flex-col">
             <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
               <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
             </h3>
@@ -843,7 +843,7 @@ window._donutData = {};
 function renderDonutChart(segments, total, centerLabel) {
   const validSegs = segments.filter(s => s.value > 0);
   if (validSegs.length === 0 || total <= 0) {
-    return '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos</p>';
+    return '<p class="text-body-sm text-on-surface-variant text-center py-4 flex-1 flex items-center justify-center">Sin datos</p>';
   }
 
   const cid = 'dn' + (_donutCounter++);
@@ -852,11 +852,11 @@ function renderDonutChart(segments, total, centerLabel) {
   let offset = 0;
   const circles = validSegs.map((seg, idx) => {
     const pct = (seg.value / total) * 100;
-    const el = `<circle id="${cid}-seg-${idx}" cx="18" cy="18" fill="transparent" r="15.915"
+    const el = `<circle id="${cid}-seg-${idx}" cx="21" cy="21" fill="none" r="15.915"
       stroke="${seg.color}" stroke-width="4"
       stroke-dasharray="${pct.toFixed(2)} ${(100 - pct).toFixed(2)}"
       stroke-dashoffset="${-offset.toFixed(2)}"
-      class="transition-all duration-300 cursor-pointer"
+      class="transition-all duration-300 cursor-pointer hover:drop-shadow-sm"
       style="transition: stroke-dasharray 0.6s ease, stroke-width 0.2s ease, opacity 0.2s ease; transform-origin: center;"
       onmouseenter="donutLegendHover('${cid}', ${idx}, true)"
       onmouseleave="donutLegendHover('${cid}', ${idx}, false)"
@@ -866,31 +866,31 @@ function renderDonutChart(segments, total, centerLabel) {
   }).join('');
 
   const legend = validSegs.map((seg, idx) => `
-    <div class="flex items-center justify-between gap-4 min-w-0 w-full cursor-pointer hover:bg-surface-container/40 px-2 py-1 rounded-lg transition-colors"
+    <div class="flex items-center justify-between gap-3 min-w-0 w-full cursor-pointer hover:bg-surface-container/60 px-3 py-1.5 rounded-lg transition-colors"
          onmouseenter="donutLegendHover('${cid}', ${idx}, true)"
          onmouseleave="donutLegendHover('${cid}', ${idx}, false)"
          onclick="donutLegendTap('${cid}', ${idx})">
       <div class="flex items-center gap-2 min-w-0">
-        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${seg.color}"></div>
+        <div class="w-3.5 h-3.5 rounded-full flex-shrink-0 shadow-sm" style="background:${seg.color}"></div>
         <span class="text-label-sm text-on-surface-variant truncate">${seg.label}</span>
       </div>
       <span class="text-label-sm font-bold text-on-surface flex-shrink-0">${fmt.money(seg.value)}</span>
     </div>`).join('');
 
   return `
-    <div class="flex flex-col 2xl:flex-row items-center gap-6 2xl:gap-4 justify-center w-full min-w-0">
-      <div class="relative w-40 h-40 2xl:w-32 2xl:h-32 flex-shrink-0">
-        <svg id="${cid}-svg" class="w-full h-full -rotate-90" viewBox="0 0 36 36">${circles}</svg>
+    <div class="flex flex-col lg:flex-row items-center gap-6 lg:gap-6 justify-center w-full min-w-0 flex-1">
+      <div class="relative w-48 h-48 lg:w-44 lg:h-44 flex-shrink-0 drop-shadow-sm">
+        <svg id="${cid}-svg" class="w-full h-full -rotate-90" viewBox="0 0 42 42">${circles}</svg>
         <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 pointer-events-none">
-          <span class="text-[10px] text-on-surface-variant">${centerLabel}</span>
-          <span class="text-headline-sm 2xl:text-body-md font-bold text-on-surface">${fmt.money(total)}</span>
+          <span class="text-[11px] text-on-surface-variant truncate w-28 text-center px-2">${centerLabel}</span>
+          <span class="text-headline-sm font-bold text-on-surface mt-0.5">${fmt.money(total)}</span>
         </div>
-        <div id="${cid}-tip" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
-          <span id="${cid}-tip-label" class="text-[9px] text-on-surface-variant text-center px-2 leading-tight"></span>
-          <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
+        <div id="${cid}-tip" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 bg-surface/80 backdrop-blur-sm rounded-full scale-90">
+          <span id="${cid}-tip-label" class="text-[10px] text-on-surface-variant text-center px-4 leading-tight truncate w-full"></span>
+          <span id="${cid}-tip-value" class="text-label-md font-bold text-primary mt-0.5"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-1.5 w-full 2xl:w-auto 2xl:flex-1 min-w-0">
+      <div class="flex flex-col gap-1 w-full lg:w-auto lg:flex-1 min-w-0 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
         ${legend}
       </div>
     </div>`;
@@ -908,10 +908,10 @@ window.donutLegendHover = function(cid, idx, isHover) {
     if (circle) {
       if (isHover) {
         if (i === idx) {
-          circle.style.strokeWidth = '5.2';
+          circle.style.strokeWidth = '6';
           circle.style.opacity = '1';
         } else {
-          circle.style.opacity = '0.3';
+          circle.style.opacity = '0.25';
         }
       } else {
         circle.style.strokeWidth = '4';
