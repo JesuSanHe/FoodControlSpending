@@ -663,47 +663,47 @@ function renderPanel() {
       <div class="lg:col-span-8 space-y-6">
         
         <!-- KPIs y Balance -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- KPIs -->
-          <div class="md:col-span-7 grid grid-cols-2 gap-3 reveal-card">
+          <div class="grid grid-cols-2 gap-3 reveal-card">
             <div class="col-span-2 bg-surface-container-low border border-outline-variant p-4 rounded-xl">
               <span class="text-label-sm text-on-surface-variant">Gasto Total</span>
               <p class="text-display-lg text-primary font-bold mt-1">${fmt.money(kpis.gastoTotal)}</p>
             </div>
             <div class="bg-surface border border-outline-variant p-3 rounded-xl flex flex-col justify-center">
               <span class="material-symbols-outlined text-secondary">groups</span>
-              <p class="text-[10px] text-on-surface-variant mt-1 leading-tight">Promedio / Persona</p>
-              <p class="text-headline-sm font-bold mt-1">${fmt.money(kpis.promedioPersona).replace('.00','')}</p>
+              <p class="text-label-sm text-on-surface-variant mt-1">Promedio / Persona</p>
+              <p class="text-headline-sm font-bold mt-1">${fmt.money(kpis.promedioPersona)}</p>
             </div>
             <div class="bg-surface border border-outline-variant p-3 rounded-xl flex flex-col justify-center">
               <span class="material-symbols-outlined text-secondary">shopping_cart</span>
-              <p class="text-[10px] text-on-surface-variant mt-1 leading-tight">Viajes de compra</p>
+              <p class="text-label-sm text-on-surface-variant mt-1">Viajes de compra</p>
               <p class="text-headline-sm font-bold mt-1">${kpis.viajes}</p>
             </div>
           </div>
           
           <!-- Balance -->
-          <div class="md:col-span-5 bg-surface border border-outline-variant p-4 rounded-xl reveal-card flex flex-col justify-between">
+          <div class="bg-surface border border-outline-variant p-4 rounded-xl reveal-card flex flex-col justify-between">
             <h3 class="text-label-md font-semibold text-on-surface mb-2 flex items-center gap-1">
               <span class="material-symbols-outlined text-primary text-[18px]">balance</span> Balance
             </h3>
             <div class="flex items-center justify-between flex-1 mt-2">
               <div class="text-center">
-                <p class="text-[10px] text-on-surface-variant">${CONFIG.USUARIOS[0]}</p>
-                <p class="text-body-md font-bold text-on-surface">${fmt.money(kpis.gastoJesus).replace('.00','')}</p>
-                <p class="text-[10px] text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoJesus/kpis.gastoTotal*100 : 0)}%</p>
+                <p class="text-label-sm text-on-surface-variant">${CONFIG.USUARIOS[0]}</p>
+                <p class="text-headline-sm font-bold text-on-surface mt-1">${fmt.money(kpis.gastoJesus)}</p>
+                <p class="text-label-sm text-on-surface-variant mt-1">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoJesus/kpis.gastoTotal*100 : 0)}%</p>
               </div>
-              <div class="flex flex-col items-center px-1">
+              <div class="flex flex-col items-center px-2">
                 ${diffAbs > 0.01 ? `
-                <p class="text-[8px] text-on-surface-variant">${debe} debe</p>
-                <p class="text-label-md font-bold text-primary">${fmt.money(diffAbs / 2).replace('.00','')}</p>
-                <p class="text-[8px] text-on-surface-variant">a ${acreedor}</p>` :
-                `<span class="text-primary text-[10px] font-bold">¡Par! 🎉</span>`}
+                <p class="text-[10px] text-on-surface-variant font-medium">${debe} debe</p>
+                <p class="text-headline-sm font-bold text-primary my-0.5">${fmt.money(diffAbs / 2)}</p>
+                <p class="text-[10px] text-on-surface-variant font-medium">a ${acreedor}</p>` :
+                `<span class="text-primary text-label-sm font-bold">¡Par! 🎉</span>`}
               </div>
               <div class="text-center">
-                <p class="text-[10px] text-on-surface-variant">${CONFIG.USUARIOS[1]}</p>
-                <p class="text-body-md font-bold text-on-surface">${fmt.money(kpis.gastoLilian).replace('.00','')}</p>
-                <p class="text-[10px] text-on-surface-variant">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoLilian/kpis.gastoTotal*100 : 0)}%</p>
+                <p class="text-label-sm text-on-surface-variant">${CONFIG.USUARIOS[1]}</p>
+                <p class="text-headline-sm font-bold text-on-surface mt-1">${fmt.money(kpis.gastoLilian)}</p>
+                <p class="text-label-sm text-on-surface-variant mt-1">${Math.round(kpis.gastoTotal > 0 ? kpis.gastoLilian/kpis.gastoTotal*100 : 0)}%</p>
               </div>
             </div>
           </div>
@@ -811,16 +811,16 @@ function renderDonutChart(segments, total, centerLabel) {
   }).join('');
 
   const legend = validSegs.map(seg => `
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full" style="background:${seg.color}"></div>
-        <span class="text-label-sm text-on-surface-variant">${seg.label}</span>
+    <div class="flex items-center justify-between gap-4 min-w-0 w-full">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${seg.color}"></div>
+        <span class="text-label-sm text-on-surface-variant truncate">${seg.label}</span>
       </div>
-      <span class="text-label-sm font-bold text-on-surface">${fmt.money(seg.value)}</span>
+      <span class="text-label-sm font-bold text-on-surface flex-shrink-0">${fmt.money(seg.value)}</span>
     </div>`).join('');
 
   return `
-    <div class="flex flex-col sm:flex-row items-center gap-6 justify-center">
+    <div class="flex flex-col xl:flex-row items-center gap-6 justify-center">
       <div class="relative w-40 h-40 flex-shrink-0">
         <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
           onclick="donutTap(event,'${cid}')">${circles}</svg>
@@ -833,7 +833,7 @@ function renderDonutChart(segments, total, centerLabel) {
           <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-1.5 w-full sm:flex-1">
+      <div class="flex flex-col gap-1.5 w-full xl:flex-1">
         ${legend}
       </div>
     </div>`;

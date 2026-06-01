@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kitchensync-v2';
+const CACHE_NAME = 'kitchensync-v3';
 const ASSETS = [
   './',
   './index.html',
