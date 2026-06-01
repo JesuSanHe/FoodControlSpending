@@ -505,7 +505,7 @@ function renderPanel() {
         </h3>
       </div>
       <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-        ${['todos', CONFIG.USUARIOS[0].toLowerCase(), CONFIG.USUARIOS[1].toLowerCase()].map((v, i) => {
+        ${['todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]].map((v, i) => {
           const labels = ['Todos', CONFIG.USUARIOS[0], CONFIG.USUARIOS[1]];
           return `<button onclick="setUsuarioPanel('${v}')"
             class="px-3 py-1 rounded-full text-label-sm whitespace-nowrap border transition-colors
