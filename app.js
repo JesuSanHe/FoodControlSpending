@@ -531,21 +531,11 @@ function renderPanel() {
           : state.panel.usuario === 'Lilian'
           ? (categoriasLilian || [])
           : (categoriasJesus || []);
-        return catListData.length === 0
-          ? '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos para este periodo</p>'
-          : catListData.slice(0, 8).map(c => `
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${catColor(c.nombre)}"></div>
-          <div class="flex-1">
-            <div class="flex justify-between mb-0.5">
-              <span class="text-label-sm text-on-surface">${c.nombre}</span>
-              <span class="text-label-sm font-bold text-on-surface">${fmt.money(c.total)}</span>
-            </div>
-            <div class="h-1.5 bg-surface-container rounded-full">
-              <div class="h-full rounded-full" style="width:${catListData[0].total > 0 ? Math.round(c.total/catListData[0].total*100) : 0}%;background:${catColor(c.nombre)}"></div>
-            </div>
-          </div>
-        </div>`).join('');
+        const catTotal = catListData.reduce((s, c) => s + c.total, 0);
+        const catSegs  = catListData.slice(0, 8).map(c => ({
+          label: c.nombre, value: c.total, color: catColor(c.nombre)
+        }));
+        return renderDonutChart(catSegs, catTotal, 'Categorías');
       })()}
     </div>
 
