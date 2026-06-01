@@ -432,7 +432,7 @@ function renderPanel() {
       { label: CONFIG.USUARIOS[0], value: kpis.gastoJesus,  color: '#006948' },
       { label: CONFIG.USUARIOS[1], value: kpis.gastoLilian, color: '#03a9f4' },
     ];
-  } else if (state.panel.usuario === CONFIG.USUARIOS[0].toLowerCase()) {
+  } else if (state.panel.usuario === CONFIG.USUARIOS[0]) {
     donutLabel  = CONFIG.USUARIOS[0];
     donutTotal  = kpis.gastoJesus;
     donutData   = categorias.filter(c => c.total > 0).slice(0, 5).map((c, i) => ({
@@ -553,7 +553,7 @@ function renderPanel() {
 
 function setUsuarioPanel(usuario) {
   state.panel.usuario = usuario;
-  renderPanel();
+  loadPanel();
 }
 
 function setPeriodoPanel(periodo) {
