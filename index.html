@@ -6,6 +6,18 @@
   <meta name="theme-color" content="#006948">
   <title>KitchenSync</title>
 
+  <!-- Inicializar tema oscuro antes del renderizado -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -126,6 +138,9 @@
           style="top: var(--banner-offset, 0)">
     <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">restaurant</span>
     <h1 id="topbar-title" class="text-headline-sm flex-1">Registro de Compra</h1>
+    <button id="btn-theme-toggle" class="text-on-surface-variant hover:text-primary active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full" title="Alternar tema">
+      <span id="theme-toggle-icon" class="material-symbols-outlined text-[24px]">dark_mode</span>
+    </button>
   </header>
 
   <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
@@ -152,7 +167,7 @@
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-label-sm text-on-surface-variant">Lugar de compra</label>
-          <input id="reg-tienda" type="text" placeholder="Ej: Walmart, Mercado Local"
+          <input id="reg-tienda" type="text" placeholder="Ej: Walmart, Mercado Local" list="reg-tienda-options"
             class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
       </div>
@@ -163,7 +178,7 @@
 
         <div class="flex flex-col gap-1">
           <label class="text-label-sm text-on-surface-variant">Nombre del producto</label>
-          <input id="reg-nombre" type="text" placeholder="Ej: Leche Entera 1L"
+          <input id="reg-nombre" type="text" placeholder="Ej: Leche Entera 1L" list="reg-nombre-options"
             class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
 
@@ -347,6 +362,16 @@
     });
     observer.observe(banner, { attributes: true, attributeFilter: ['class'] });
   </script>
+
+  <!-- Datalists para autocompletado -->
+  <datalist id="reg-nombre-options"></datalist>
+  <datalist id="reg-tienda-options"></datalist>
+
+  <!-- Overlay de carga global -->
+  <div id="loading-overlay" class="hidden fixed inset-0 z-[100] bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 transition-opacity duration-300 opacity-0">
+    <span class="material-symbols-outlined animate-spin text-white text-5xl">autorenew</span>
+    <span class="text-white text-body-md font-semibold" id="loading-overlay-text">Guardando compra…</span>
+  </div>
 
 </body>
 </html>

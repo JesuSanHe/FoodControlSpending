@@ -122,6 +122,17 @@ function initRegistro() {
   inputCant.addEventListener('input', calcPrecioUnitario);
   inputPrecio.addEventListener('input', calcPrecioUnitario);
 
+  // Auto-completar categoría y unidad al seleccionar producto existente
+  document.getElementById('reg-nombre').addEventListener('input', e => {
+    const val = e.target.value.trim();
+    if (!val) return;
+    const match = state.inventario.find(i => i.producto.toLowerCase() === val.toLowerCase());
+    if (match) {
+      if (match.categoria) document.getElementById('reg-categoria').value = match.categoria;
+      if (match.unidad) document.getElementById('reg-unidad').value = match.unidad;
+    }
+  });
+
   // Botón agregar al carrito
   document.getElementById('btn-agregar').addEventListener('click', agregarAlCarrito);
 
@@ -208,11 +219,11 @@ async function guardarCompra() {
   if (!fecha)  return showToast('Selecciona una fecha', 'error');
   if (!tienda) return showToast('Ingresa el lugar de compra', 'error');
 
-  const btn = document.getElementById('btn-guardar');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Guardando…';
+  showLoadingOverlay('Guardando compra…');
 
   const res = await callSaveCompra(fecha, usuario, tienda, [...state.cart]);
+
+  hideLoadingOverlay();
 
   if (res.error) {
     showToast('Error: ' + res.error, 'error');
@@ -224,9 +235,6 @@ async function guardarCompra() {
     state.inventario = [];
     state.panel.data = null;
   }
-
-  btn.disabled = false;
-  btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">cloud_upload</span> Guardar Compra Completa';
 }
 
 // ------------------------------------------------------------------
@@ -253,6 +261,7 @@ async function loadInventario() {
   }
 
   renderInventario();
+  actualizarAutocompletados();
 }
 
 function renderInventario() {
@@ -1054,8 +1063,12 @@ function init() {
     document.getElementById('demo-banner').classList.remove('hidden');
   }
 
+  initThemeToggle();
   initRegistro();
   initInventario();
+
+  // Precargar inventario en segundo plano para habilitar autocompletado de inmediato
+  loadInventario();
 
   // Navegación bottom bar
   document.querySelectorAll('.nav-item').forEach(el => {
@@ -1069,6 +1082,75 @@ function init() {
 
   // Mostrar vista inicial
   showView('panel');
+}
+
+// ------------------------------------------------------------------
+// Autocompletados e Historial
+// ------------------------------------------------------------------
+function actualizarAutocompletados() {
+  const dlistNombre = document.getElementById('reg-nombre-options');
+  const dlistTienda = document.getElementById('reg-tienda-options');
+  if (!dlistNombre || !dlistTienda || !state.inventario) return;
+
+  // Obtener nombres únicos del inventario
+  const nombresUnicos = [...new Set(state.inventario.map(i => i.producto))].sort();
+  dlistNombre.innerHTML = nombresUnicos.map(n => `<option value="${n}"></option>`).join('');
+
+  // Obtener tiendas únicas del inventario
+  const tiendasUnicas = [...new Set(state.inventario.filter(i => i.tienda).map(i => i.tienda))].sort();
+  dlistTienda.innerHTML = tiendasUnicas.map(t => `<option value="${t}"></option>`).join('');
+}
+
+// ------------------------------------------------------------------
+// Tema Claro / Oscuro (Dark Mode)
+// ------------------------------------------------------------------
+function initThemeToggle() {
+  const btn = document.getElementById('btn-theme-toggle');
+  const icon = document.getElementById('theme-toggle-icon');
+  if (!btn || !icon) return;
+
+  // Actualizar icono inicial
+  const isDark = document.documentElement.classList.contains('dark');
+  icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+
+  btn.addEventListener('click', () => {
+    const currentDark = document.documentElement.classList.contains('dark');
+    if (currentDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
+      icon.textContent = 'dark_mode';
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      icon.textContent = 'light_mode';
+    }
+  });
+}
+
+// ------------------------------------------------------------------
+// Overlay de Carga Global
+// ------------------------------------------------------------------
+function showLoadingOverlay(text = 'Cargando…') {
+  const overlay = document.getElementById('loading-overlay');
+  const overlayText = document.getElementById('loading-overlay-text');
+  if (!overlay) return;
+  if (overlayText) overlayText.textContent = text;
+  overlay.classList.remove('hidden');
+  // Forzar reflow para animación
+  overlay.offsetHeight;
+  overlay.classList.add('opacity-100');
+}
+
+function hideLoadingOverlay() {
+  const overlay = document.getElementById('loading-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('opacity-100');
+  overlay.classList.add('opacity-0');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
 }
 
 document.addEventListener('DOMContentLoaded', init);
