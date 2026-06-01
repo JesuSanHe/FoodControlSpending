@@ -607,9 +607,8 @@ function renderDonutChart(segments, total, centerLabel) {
     <div class="flex flex-col items-center gap-4">
       <div class="relative w-40 h-40">
         <svg id="${cid}-svg" class="w-full h-full -rotate-90 cursor-pointer" viewBox="0 0 36 36"
-          onclick="donutTap(event,'${cid}')"
-          ontouchstart="donutTap(event,'${cid}')">${circles}</svg>
-        <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200">
+          onclick="donutTap(event,'${cid}')">${circles}</svg>
+        <div id="${cid}-center" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 pointer-events-none">
           <span class="text-[10px] text-on-surface-variant">${centerLabel}</span>
           <span class="text-headline-sm font-bold text-on-surface">${fmt.money(total)}</span>
         </div>
@@ -641,8 +640,8 @@ function donutTap(e, cid) {
   const dist  = Math.sqrt(dx * dx + dy * dy);
   const r     = rect.width / 2;
 
-  // Solo responder en el área del anillo (entre 38% y 102% del radio)
-  if (dist < r * 0.38 || dist > r * 1.02) {
+  // Solo responder en el área del anillo (entre 75% y 102% del radio)
+  if (dist < r * 0.75 || dist > r * 1.02) {
     tip.classList.add('opacity-0');
     center.classList.remove('opacity-0');
     return;
