@@ -403,7 +403,7 @@ async function loadPanel() {
   const container = document.getElementById('panel-content');
   container.innerHTML = renderSkeleton(6);
 
-  const res = await apiGet({ action: 'getDashboard', periodo: state.panel.periodo, usuario: state.panel.usuario });
+  const res = await apiGet({ action: 'getDashboard', periodo: state.panel.periodo });
 
   if (res._demo) {
     state.panel.data = demoPanel();
@@ -421,9 +421,11 @@ function renderPanel() {
   const d = state.panel.data;
   if (!d) return;
 
-  const { kpis, categorias, historial, alertas, precios } = d;
+  const { kpis, categorias, categoriasJesus, categoriasLilian, historial, alertas, precios } = d;
 
   // Datos del donut según filtro de usuario
+  // NOTA: No comparamos 'Jesús' (tiene acento, encoding frágil).
+  // Comparamos 'Lilian' (sin acento) y dejamos Jesús en el bloque else.
   let donutData, donutLabel, donutTotal;
   if (state.panel.usuario === 'todos') {
     donutLabel  = 'Hogar';
@@ -432,16 +434,17 @@ function renderPanel() {
       { label: CONFIG.USUARIOS[0], value: kpis.gastoJesus,  color: '#006948' },
       { label: CONFIG.USUARIOS[1], value: kpis.gastoLilian, color: '#03a9f4' },
     ];
-  } else if (state.panel.usuario === CONFIG.USUARIOS[0]) {
-    donutLabel  = CONFIG.USUARIOS[0];
-    donutTotal  = kpis.gastoJesus;
-    donutData   = categorias.filter(c => c.total > 0).slice(0, 5).map((c, i) => ({
+  } else if (state.panel.usuario === 'Lilian') {
+    donutLabel  = CONFIG.USUARIOS[1];
+    donutTotal  = kpis.gastoLilian;
+    donutData   = (categoriasLilian || []).filter(c => c.total > 0).slice(0, 5).map(c => ({
       label: c.nombre, value: c.total, color: catColor(c.nombre)
     }));
   } else {
-    donutLabel  = CONFIG.USUARIOS[1];
-    donutTotal  = kpis.gastoLilian;
-    donutData   = categorias.filter(c => c.total > 0).slice(0, 5).map((c, i) => ({
+    // else = Jesús (primer usuario) — sin comparar string con acento
+    donutLabel  = CONFIG.USUARIOS[0];
+    donutTotal  = kpis.gastoJesus;
+    donutData   = (categoriasJesus || []).filter(c => c.total > 0).slice(0, 5).map(c => ({
       label: c.nombre, value: c.total, color: catColor(c.nombre)
     }));
   }
@@ -522,9 +525,15 @@ function renderPanel() {
       <h3 class="text-label-md font-semibold text-on-surface mb-3 flex items-center gap-1">
         <span class="material-symbols-outlined text-primary text-[18px]">category</span> Por Categoría
       </h3>
-      ${categorias.length === 0
-        ? '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos para este periodo</p>'
-        : categorias.slice(0, 8).map(c => `
+      ${(() => {
+        const catListData = state.panel.usuario === 'todos'
+          ? categorias
+          : state.panel.usuario === 'Lilian'
+          ? (categoriasLilian || [])
+          : (categoriasJesus || []);
+        return catListData.length === 0
+          ? '<p class="text-body-sm text-on-surface-variant text-center py-4">Sin datos para este periodo</p>'
+          : catListData.slice(0, 8).map(c => `
         <div class="flex items-center gap-2 mb-2">
           <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${catColor(c.nombre)}"></div>
           <div class="flex-1">
@@ -533,11 +542,11 @@ function renderPanel() {
               <span class="text-label-sm font-bold text-on-surface">${fmt.money(c.total)}</span>
             </div>
             <div class="h-1.5 bg-surface-container rounded-full">
-              <div class="h-full rounded-full" style="width:${categorias[0].total > 0 ? Math.round(c.total/categorias[0].total*100) : 0}%;background:${catColor(c.nombre)}"></div>
+              <div class="h-full rounded-full" style="width:${catListData[0].total > 0 ? Math.round(c.total/catListData[0].total*100) : 0}%;background:${catColor(c.nombre)}"></div>
             </div>
           </div>
-        </div>`).join('')
-      }
+        </div>`).join('');
+      })()}
     </div>
 
     <!-- Historial de Gasto -->
@@ -553,7 +562,7 @@ function renderPanel() {
 
 function setUsuarioPanel(usuario) {
   state.panel.usuario = usuario;
-  loadPanel();
+  renderPanel();
 }
 
 function setPeriodoPanel(periodo) {
