@@ -837,7 +837,7 @@ function renderDonutChart(segments, total, centerLabel) {
           <span id="${cid}-tip-value" class="text-label-md font-bold text-on-surface"></span>
         </div>
       </div>
-      <div class="flex flex-col gap-1.5 w-full sm:flex-1 max-h-[160px] overflow-y-auto pr-1">
+      <div class="flex flex-col gap-1.5 w-full sm:flex-1">
         ${legend}
       </div>
     </div>`;
