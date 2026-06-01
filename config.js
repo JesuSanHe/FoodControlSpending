@@ -33,7 +33,7 @@ const CONFIG = {
     { nombre: 'Ultraprocesados y Snacks',  color: '#ff6f00', icono: 'cookie'         },
     { nombre: 'Bebidas',                   color: '#03a9f4', icono: 'local_cafe'     },
     { nombre: 'Tortillas',                 color: '#f9a825', icono: 'lunch_dining'   },
-    { nombre: 'Comidas Fuera y Delivery',  color: '#5c6bc0', icono: 'delivery_dining'},
+    { nombre: 'Comidas Fuera y Delivery',  color: '#5c6bc0', icono: 'delivery_dining', esConsumoInmediato: true },
   ],
 
   // Unidades de medida disponibles en el formulario

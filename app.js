@@ -238,13 +238,18 @@ async function loadInventario() {
 
   const res = await apiGet({ action: 'getInventario' });
 
+  const filterImmediate = list => list.filter(i => {
+    const cat = CONFIG.CATEGORIAS.find(c => c.nombre === i.categoria);
+    return !cat || !cat.esConsumoInmediato;
+  });
+
   if (res._demo) {
-    state.inventario = demoInventario();
+    state.inventario = filterImmediate(demoInventario());
   } else if (res.error) {
     container.innerHTML = renderError(res.error);
     return;
   } else {
-    state.inventario = res.inventario || [];
+    state.inventario = filterImmediate(res.inventario || []);
   }
 
   renderInventario();
@@ -377,7 +382,7 @@ function initInventario() {
 
 function renderCatChips() {
   const container = document.getElementById('inv-cat-chips');
-  const cats = ['Todos', ...CONFIG.CATEGORIAS.map(c => c.nombre)];
+  const cats = ['Todos', ...CONFIG.CATEGORIAS.filter(c => !c.esConsumoInmediato).map(c => c.nombre)];
 
   container.innerHTML = cats.map(c => `
     <button data-cat="${c.toLowerCase()}"
