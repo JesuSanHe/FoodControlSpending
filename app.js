@@ -293,7 +293,13 @@ async function guardarCompra() {
 // ------------------------------------------------------------------
 async function loadInventario() {
   const container = document.getElementById('inv-list');
-  container.innerHTML = renderSkeleton(4);
+  const hasData = state.inventario && state.inventario.length > 0;
+
+  if (hasData) {
+    container.classList.add('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
+  } else {
+    container.innerHTML = renderSkeleton(4);
+  }
 
   const res = await apiGet({ action: 'getInventario' });
 
@@ -306,12 +312,16 @@ async function loadInventario() {
     state.inventario = filterImmediate(demoInventario());
   } else if (res.error) {
     container.innerHTML = renderError(res.error);
+    container.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
     return;
   } else {
     state.inventario = filterImmediate(res.inventario || []);
   }
 
   renderInventario();
+  
+  // Quitar el estado de carga
+  container.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
   actualizarAutocompletados();
 }
 
@@ -643,7 +653,13 @@ function setCatFilter(cat) {
 // ------------------------------------------------------------------
 async function loadPanel() {
   const container = document.getElementById('panel-content');
-  container.innerHTML = renderSkeleton(6);
+  const hasData = !!state.panel.data;
+  
+  if (hasData) {
+    container.classList.add('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
+  } else {
+    container.innerHTML = renderSkeleton(6);
+  }
 
   const res = await apiGet({ action: 'getDashboard', periodo: state.panel.periodo });
 
@@ -651,12 +667,16 @@ async function loadPanel() {
     state.panel.data = demoPanel();
   } else if (res.error) {
     container.innerHTML = renderError(res.error);
+    container.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
     return;
   } else {
     state.panel.data = res;
   }
 
   renderPanel();
+  
+  // Quitar el estado de carga
+  container.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-300');
 }
 
 function renderPanel() {
